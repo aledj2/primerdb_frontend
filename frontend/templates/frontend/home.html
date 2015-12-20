@@ -9,13 +9,11 @@
     <meta name="author" content="">
     <link rel="icon" href="../../favicon.ico">
 
-    <title>Primer database</title>
+ 	{% block title %} {% endblock %}
 
     <!-- Bootstrap core CSS -->
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
-	
 	<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
-
     <link href="../../dist/css/bootstrap.min.css" rel="stylesheet">
 
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
@@ -62,14 +60,19 @@
       </div>
     </nav>
 
-    <!-- Main jumbotron for a primary marketing message or call to action -->
+<!--     Main jumbotron for a primary marketing message or call to action
     <div class="jumbotron">
       <div class="container">
         <h1>Primer Database</h1>
         <p>Please log in above</p>
       </div>
-    </div>
+    </div> -->
 
+<body>
+{% block content %}
+
+{% endblock %}
+</body>
 
     <!-- Bootstrap core JavaScript
     ================================================== -->

@@ -15,7 +15,7 @@ import os
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-STATICFILES_DIR = (os.path.join(BASE_DIR, "static"),os.path.join(BASE_DIR, "frontend/static"))
+STATICFILES_DIR = (os.path.join(BASE_DIR, "frontend/static"))#,os.path.join(BASE_DIR, "static"))
 
 
 # Quick-start development settings - unsuitable for production

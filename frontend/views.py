@@ -3,7 +3,7 @@ from django.http import HttpResponse
 from django.shortcuts import render_to_response
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from .models import Chromosome, Primerinfo, Pcrproducts
+from .models import Chromosome, Primerinformation, Pcrproducts, Primerinfo, Blat, Item, Geneshgnc140714, Snpcheck, Storage, Audit
 from .forms import NameForm, ItemForm
 
 #def home(request):
@@ -44,10 +44,43 @@ def primer_info(request):
     context = {}
     query_results = Pcrproducts.objects.all()
     context['query_results'] = query_results
-    form = ItemForm(request.POST)
+    form = ItemForm(request.POST or None)
     context['form'] = form
     
     return render_to_response("frontend/primer_info.html", context)
+
+def primer_design(request):
+    context={}
+    primername = "ABAT_Ex5_Tag1F_V1"
+    context['PN']=primername
+    primerinformation = Primerinformation.objects.all()
+    context['primerinformation']=primerinformation
+    blattable=Blat.objects.all()
+    context['blat']=blattable
+    item_strand=Item.objects.all()
+    context['item_strand']=item_strand
+    snpcheck_table=Snpcheck.objects.all()
+    context['snpcheck']=snpcheck_table
+    storage_table = Storage.objects.all()
+    context['storage']=storage_table
+    audit_table=Audit.objects.all()
+    context['audit']=audit_table
+    pcrproducts_table=Pcrproducts.objects.all()
+    context['pcrproducts']=pcrproducts_table
+    return render_to_response("frontend/primer_design.html", context)
+
+def amplicon_design(request):
+    context={}
+    productid = 1
+    context['productid']=productid
+    pcrproducts_table=Pcrproducts.objects.all()
+    context['pcrproducts']=pcrproducts_table
+    primerinformation = Primerinformation.objects.all()
+    context['primerinformation']=primerinformation
+    storage = Storage.objects.all()
+    context['storage'] = storage
+    return render_to_response("frontend/amplicon_design.html", context)
+    
 #   There are 11 forms. These are numbered 010, 020 with any subforms named 0101, 0102 etc. The 11 forms are listed below:
 # 4.1. To view primer design
 # 4.2. To view amplicon(PCR product) design

@@ -28,6 +28,13 @@ class Audit(models.Model):
     teh2olot = models.CharField(db_column='TEH2OLot', max_length=50, blank=True, null=True)  # Field name made lowercase.
     madeby = models.IntegerField(db_column='MadeBy', blank=True, null=True)  # Field name made lowercase.
     
+    def supplier_txt(self):
+        return Item.objects.get(itemid=self.supplier)
+        
+    def madeby_txt(self):
+        return Item.objects.get(itemid=self.madeby)
+
+
     def __unicode__(self):
         return str(self.auditkey)
     
@@ -109,8 +116,16 @@ class Blat(models.Model):
     start = models.IntegerField(db_column='Start', blank=True, null=True)  # Field name made lowercase.
     stop = models.IntegerField(db_column='Stop', blank=True, null=True)  # Field name made lowercase.
     genomebuild = models.CharField(db_column='GenomeBuild', max_length=50, blank=True, null=True)  # Field name made lowercase.
+    
+    def strandtxt(self):
+        return Item.objects.get(itemid=self.strand)
+        
+    def genomebuild_txt(self):
+        return Item.objects.get(itemid=self.genomebuild)
+
     def __unicode__(self):
         return str(self.blatkey)
+
     class Meta:
         managed = False
         db_table = 'blat'
@@ -164,7 +179,7 @@ class DjangoMigrations(models.Model):
 
 
 class Geneshgnc140714(models.Model):
-    geneshgncid = models.IntegerField(db_column='GenesHGNCID')  # Field name made lowercase.
+    geneshgncid = models.IntegerField(db_column='GenesHGNCID', primary_key=True)  # Field name made lowercase.
     hgncid = models.CharField(db_column='HGNCID', max_length=50, blank=True, null=True)  # Field name made lowercase.
     approvedsymbol = models.CharField(db_column='ApprovedSymbol', max_length=50, blank=True, null=True)  # Field name made lowercase.
     approvedname = models.CharField(db_column='ApprovedName', max_length=750, blank=True, null=True)  # Field name made lowercase.
@@ -312,7 +327,7 @@ class Pcrproducts(models.Model):
     def __unicode__(self):
         return str(self.productkey)
 
-    def items(self):
+    def pcrproducts_version_txt (self):
         return Item.objects.get(itemid=self.version)
         
     class Meta:
@@ -368,6 +383,9 @@ class Primerinfo(models.Model):
     strand = models.CharField(db_column='Strand', max_length=50, blank=True, null=True)  # Field name made lowercase.
     start = models.CharField(db_column='Start', max_length=50, blank=True, null=True)  # Field name made lowercase.
     stop = models.CharField(db_column='Stop', max_length=50, blank=True, null=True)  # Field name made lowercase.
+    
+
+    
     def __unicode__(self):
         return str(self.gene)
     class Meta:
@@ -389,8 +407,31 @@ class Primerinformation(models.Model):
     pcrprogram = models.CharField(db_column='PCRProgram', max_length=500, blank=True, null=True)  # Field name made lowercase.
     assay = models.IntegerField(db_column='Assay', blank=True, null=True)  # Field name made lowercase.
     ucsc = models.CharField(db_column='UCSC', max_length=500, blank=True, null=True)  # Field name made lowercase.
+    
+    def gene_symbol(self):
+        return Geneshgnc140714.objects.get(geneshgncid=self.geneshgncid)
+    
+    def chromosome_table(self):
+        return Chromosome.objects.get(chrid=self.chromosome)
+    
+    def start_stop(self):
+        return Blat.objects.get(primerkey=self.primerkey)
+    
+    def snpcheck (self):
+        return Snpcheck.objects.get(primerkey=self.primerkey)
+    
+    def version_text (self):
+        return Item.objects.get(itemid=self.version)
+
+    def modification_text (self):
+        return Item.objects.get(itemid=self.modification)
+
+    def assay_txt (self):
+        return Item.objects.get(itemid=self.assay)
+    
     def __unicode__(self):
         return str(self.primerkey)
+    
     class Meta:
         managed = False
         db_table = 'primerinformation'
@@ -410,6 +451,13 @@ class Snpcheck(models.Model):
     notes = models.CharField(db_column='Notes', max_length=500, blank=True, null=True)  # Field name made lowercase.
     validated = models.CharField(db_column='Validated', max_length=100, blank=True, null=True)  # Field name made lowercase.
     datestamp = models.DateTimeField(db_column='DateStamp', blank=True, null=True)  # Field name made lowercase.
+    
+    def snpcheck_result_txt(self):
+        return Item.objects.get(itemid=self.result)
+        
+    def snpchecked_txt(self):
+        return Item.objects.get(itemid=self.snpchecked)
+
     def __unicode__(self):
         return str(self.snpcheckkey)
     class Meta:
@@ -425,6 +473,16 @@ class Storage(models.Model):
     pcrproductkey = models.IntegerField(db_column='PCRProductKey', blank=True, null=True)  # Field name made lowercase.
     active = models.TextField(db_column='Active')  # Field name made lowercase. This field type is a guess.
     concentration = models.IntegerField(db_column='Concentration', blank=True, null=True)  # Field name made lowercase.
+    
+    def storage_tray_txt(self):
+        return Item.objects.get(itemid=self.tray)
+        
+    def storage_grid_txt(self):
+        return Item.objects.get(itemid=self.grid)
+
+    def storage_conc_txt(self):
+        return Item.objects.get(itemid=self.concentration)        
+
     def __unicode__(self):
         return str(self.storagekey)
     class Meta:

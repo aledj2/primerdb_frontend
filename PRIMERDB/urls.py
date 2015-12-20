@@ -24,5 +24,7 @@ urlpatterns = [
     url(r'^chromosome/','frontend.views.chromosome_page', name = 'chromosome_page'),
     url(r'^chromosome/', 'frontend.views.chromosome_home', name = 'chromosome_home'),
     url(r'^name/','frontend.views.name', name = 'name'),
-    url(r'^primer_info','frontend.views.primer_info', name='primer_info'),
+    url(r'^primer_info/','frontend.views.primer_info', name='primer_info'),
+    url(r'^primer_design/','frontend.views.primer_design', name='primer_design'),
+    url(r'^amplicon_design/','frontend.views.amplicon_design', name='amplicon_design'),
 ]

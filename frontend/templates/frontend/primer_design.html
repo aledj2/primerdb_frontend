@@ -1,0 +1,225 @@
+<!-- extends base -->
+{% extends "base.html" %}
+
+<!-- Import static -->
+{% load staticfiles %}
+
+<!-- Custom styles for this template -->
+<link href="{%static 'frontend/css/jumbotron.css' %}" rel="stylesheet">
+
+<!-- start title block -->
+{% block title %}
+<br>
+<div class="jumbotron">
+<div class="container">
+
+<!-- get the Primername -->
+{% if PN != none %}
+  <h3>  {{PN}}  </h3>
+{% endif %}
+
+
+</div>
+</div> 
+{% endblock %}
+
+
+<!-- start content block -->
+{% block content %}
+<div class="jumbotron">
+      <div class="container">
+<!-- set primername again -->
+{% if PN != none %}
+{% endif %}
+
+<!-- Look up primer -->
+{% for primer in primerinformation %}
+{% if primer.primername == PN %}
+{% for Blat in blat %}
+{% if primer.primerkey == Blat.primerkey %}
+
+
+<!-- {% if Blat.itemid == item.start_stop.strand %} -->
+<!-- get the strand from -->
+<div class="row">
+<strong> 
+  <div class="col-md-1">Gene</div>
+  <div class="col-md-2">Location</div>
+  <div class="col-md-1">Strand</div>
+  <div class="col-md-2">Genome build</div>
+  <div class="col-md-2">Sequence</div>
+  <div class="col-md-3">Amplicons using this primer</div>
+  <!-- <div class="col-md-3">Start</div>
+  <div class="col-md-3">Stop</div> -->
+</strong>
+</div>
+<div class="row">
+  <div class="col-md-1">{{primer.gene_symbol.approvedsymbol}}</div>
+  <div class="col-md-2">{{primer.chromosome_table.chr}}:{{primer.start_stop.start}}-{{primer.start_stop.stop}}</div>
+  <div class="col-md-1">{{Blat.strandtxt.item}}</div>
+  <div class="col-md-2">{{Blat.genomebuild_txt.item}}</div>
+  <div class="col-md-2">{{primer.sequence}}</div>
+  <div class="col-md-3">
+    <div class ="row">
+        {% for pcr in pcrproducts %}
+        {% if primer.primerkey == pcr.fprimerid or primer.primerkey == pcr.rprimerid %}
+            <div class="col-md-12">{{pcr.productname}}</div>
+    </div>
+</div>
+</div>
+</div>
+</div>
+<br>
+<!-- SNP check -->
+<div class="jumbotron">
+<div class="container">
+<p> SNP Check </p>
+{% for snpcheck in snpcheck %}
+{% if snpcheck.primerkey == primer.primerkey %}
+<div class="row">
+<strong> 
+  <div class="col-md-1">SNP checked?</div>
+  <div class="col-md-2">Result</div>
+  <div class="col-md-2">Date checked</div>
+  <div class="col-md-2">SNPdb build</div>
+  <div class="col-md-1">NT</div>
+  <div class="col-md-3">RS #</div>
+  <div class="col-md-1">Validated</div>
+  <!-- <div class="col-md-3">Start</div>
+  <div class="col-md-3">Stop</div> -->
+</strong>
+</div>
+<div class="row">
+  <div class="col-md-1">{{snpcheck.snpchecked_txt.item}}</div>
+  <div class="col-md-2">{{snpcheck.snpcheck_result_txt.item}}</div>
+  <div class="col-md-2">{{snpcheck.dateofsnpcheck}}</div>
+  <div class="col-md-2">{{snpcheck.dbbuild}}</div>
+  <div class="col-md-1">{{snpcheck.nt}}</div>
+  
+  <div class="col-md-3">{% if snpcheck.rs1 != none %} {{snpcheck.rs1}} {% endif %}{% if snpcheck.rs2 != none %} {{snpcheck.rs2}}{% endif %} {% if snpcheck.rs3 != none %} {{snpcheck.rs3}}{% endif %}</div>
+  <div class="col-md-1">{{snpcheck.validated}}</div>
+</div>
+</div>
+</div>
+<br>
+<!-- Storage -->
+<div class="jumbotron">
+<div class="container">
+<p> Storage </p>
+{% for tube in storage %}
+{% if tube.primerkey == primer.primerkey and tube.concentration = 322 %}
+{% for audit in audit %}
+{% if audit.storagekey == tube.storagekey %}
+<div class="row">
+<strong> 
+<div class="col-md-1">Tray</div>
+<div class="col-md-1">Grid</div>
+<div class="col-md-2">Supplier</div>
+<div class="col-md-2">Date made</div>
+<div class="col-md-1">Product code</div>
+<div class="col-md-2">Expiry date</div>
+<div class="col-md-1">Oligo code</div>
+<div class="col-md-1">Batch number</div>
+<div class="col-md-1">Shipment date</div>
+</strong>
+</div>
+<div class="row">
+<div class="col-md-1">{{tube.storage_tray_txt.item}}</div>
+<div class="col-md-1">{{tube.storage_grid_txt.item}}</div>
+<div class="col-md-2"> {{audit.supplier_txt.item}} </div>
+<div class="col-md-2">{{audit.datemade}}</div>
+<div class="col-md-1"> {{audit.productcode}} </div>
+<div class="col-md-2">{{audit.expirydate}}</div>
+<div class="col-md-1"> {{audit.oligocode}} </div>
+<div class="col-md-1">{{audit.batchnumber}}</div>
+<div class="col-md-1"> {{audit.shipmentdate}}</div>
+<!-- close row -->
+</div>
+<!-- close container -->
+</div>
+<!-- close class -->
+</div>
+<br>
+<!-- Assay -->
+<div class="jumbotron">
+<div class="container">
+<p> Assay </p>
+<strong> 
+<div class="col-md-3">Assay</div>
+<div class="col-md-3">PCR prog</div>
+<div class="col-md-3">PCR conditions</div>
+<div class="col-md-3">UCSC</div>
+</strong>
+</div>
+<div class="row">
+<div class="col-md-3">{{primer.assay_txt.item}}</div>
+<div class="col-md-3">{{primer.pcrprogram}}</div>
+<div class="col-md-3"> {{primer.pcrconditions}} </div>
+<div class="col-md-3">{{primer.ucsc}}</div>
+<!-- close row -->
+</div>
+<!-- close container -->
+</div>
+<!-- close class -->
+</div>
+<br>
+<!-- Notes -->
+<div class="jumbotron">
+<div class="container">
+<p> Notes </p>
+<div class="row">
+<div class="col-md-12"> {{snpcheck.notes}} </div>
+<!-- close row -->
+</div>
+<!-- close container -->
+</div>
+<!-- close class -->
+</div>
+<br>
+{% endif %}
+{% endfor %}
+{% endif %}
+{% endfor %}
+{% endif %}
+{% endfor %}
+{% endif %}
+{% endfor %}
+{% endif %}
+{% endif %}
+{% endfor %}
+{% endif %}
+{% endfor %}
+
+
+<!--<table>
+<tr>
+<th> Primername </th>
+<th> gene name </th>
+<th> Chr </th>
+<th> Start </th>
+<th> Stop </th>
+<th> assay </th>
+
+</tr>
+<tr> 
+{% for item in query_result %}
+if item.primername == 
+<td>{{item.primername}}</td>
+<td>{{item.gene_symbol_2.approvedsymbol}}</td>
+<td>{{item.chromosome_table.chr}}</td>
+<td>{{item.start_stop.start}}</td>
+<td>{{item.start_stop.stop}}</td>
+<td>{{item.version_text.item}}</td>
+    </tr>
+    {% endfor %}
+</table> -->
+
+<!-- <form action ="." method = "post">
+	{{form}}
+	
+	<input type="submit" name="submit" value="Save">
+</form> -->
+
+
+{% endblock %}
+

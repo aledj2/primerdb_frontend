@@ -1,0 +1,196 @@
+<!--extends base -->
+{% extends "base.html" %}
+
+<!-- Import static -->
+{% load staticfiles %}
+
+<!-- Custom styles for this template -->
+<link href="{%static 'frontend/css/jumbotron.css' %}" rel="stylesheet">
+
+<!-- start title block -->
+{% block title %}
+<br>
+<div class="jumbotron">
+<div class="container">
+
+<!-- get the Productkey -->
+{% if productid != none %}
+<!-- find the correct amplicon -->
+{% for pcr in pcrproducts %}
+{% if pcr.productkey == productid %}
+<!-- get the F primer -->
+{% for fprimer in primerinformation %}
+{% if fprimer.primerkey == pcr.fprimerid %}
+<!-- reverse primer -->
+{% for rprimer in primerinformation %}
+{% if rprimer.primerkey == pcr.rprimerid %}
+<h2>Amplicon design</h2>
+<h2> Gene: {{fprimer.gene_symbol.approvedsymbol}} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Exon: {{fprimer.exon}} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+{{fprimer.chromosome_table.chr}}:{{fprimer.start_stop.start}}-{{rprimer.start_stop.stop}} </h2>
+</div>
+</div> 
+{% endif %}
+{% endfor %}
+{% endif %}
+{% endfor %}
+{% endif %}
+{% endfor %}
+{% endif %}
+{% endblock %}
+
+<!-- start content block -->
+{% block content %}
+<div class="jumbotron">
+    <div class="container">
+    <p>working solution freezer locations</p>
+        <div class="row">
+            <strong> 
+            <div class="col-md-4">Tray </div>
+            <div class="col-md-4">Grid</div>
+            <div class="col-md-4">Concentration (ul)</div>
+            </strong>
+        </div>
+<!-- get the Productkey -->
+{% if productid != none %}
+<!-- find the correct amplicon -->
+{% for pcr in pcrproducts %}
+{% if pcr.productkey == productid %}
+<!-- storage -->
+{% for tube in storage %}
+{% if pcr.productkey == tube.pcrproductkey %}
+        <div class="row">
+            <div class="col-md-4">{{tube.storage_tray_txt.item}}</div>
+            <div class="col-md-4">{{tube.storage_grid_txt.item}}</div>
+            <div class="col-md-4">{{tube.storage_conc_txt.item}}</div>
+        </div>
+{% endif %}
+{% endfor %}
+
+<!-- get the F primer -->
+{% for fprimer in primerinformation %}
+{% if fprimer.primerkey == pcr.fprimerid %}
+<!-- reverse primer -->
+{% for rprimer in primerinformation %}
+{% if rprimer.primerkey == pcr.rprimerid %}
+<!-- join to get concentration -->
+{% for tube in storage %}
+{% if rprimer.primerkey == tube.primerkey %}
+</div>
+</div>
+
+<div class="jumbotron">
+    <div class="container">
+    <p>Stock Primer Information</p>
+        <div class="row">
+            <strong> 
+            <div class="col-md-6">Forward primer</div>
+            <div class="col-md-2">Reverse primer</div>
+            </strong>
+        </div>
+        <div class="row">
+            <div class="col-md-2"><strong> PrimerName</strong></div>
+            <div class="col-md-4">{{fprimer.primername}}</div>
+            <div class="col-md-2"><strong> PrimerName</strong></div>
+            <div class="col-md-4">{{rprimer.primername}}</div>
+        </div>
+        <div class="row">
+            <div class="col-md-2"><strong> Concentration</strong></div>
+            <div class="col-md-4">
+            <!-- join to get concentration -->
+            {% for tube in storage %}
+            {% if fprimer.primerkey == tube.primerkey %}
+            {{tube.storage_conc_txt.item}} ul</div>
+            {% endif %}
+            {% endfor %}
+            <div class="col-md-2"><strong> Concentration</strong></div>
+            <div class="col-md-4"><!-- join to get concentration -->
+            {% for tube in storage %}
+            {% if rprimer.primerkey == tube.primerkey %}
+            {{tube.storage_conc_txt.item}} ul</div>
+            {% endif %}
+            {% endfor %}
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-2"><strong> Sequence</strong></div>
+            <div class="col-md-4">{{fprimer.sequence}}</div>
+            <div class="col-md-2"><strong> Concentration</strong></div>
+            <div class="col-md-4">{{rprimer.sequence}}</div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-2"><strong> Tag</strong></div>
+            <div class="col-md-4">{{fprimer.modification_text.item}}</div>
+            <div class="col-md-2"><strong> Tag</strong></div>
+            <div class="col-md-4">{{rprimer.modification_text.item}}</div>
+        </div>
+        <div class="row">
+            <div class="col-md-2"><strong>Stock storage location</strong></div>
+            <div class="col-md-4">
+            {% for tube in storage %}
+            {% if fprimer.primerkey == tube.primerkey %}
+            Tray:{{tube.storage_tray_txt.item}} &nbsp;&nbsp; Grid: {{tube.storage_grid_txt.item}} </div>
+            {% endif %}
+            {% endfor %}
+            <div class="col-md-2"><strong> Stock storage location</strong></div>
+            <div class="col-md-4">
+            {% for tube in storage %}
+            {% if rprimer.primerkey == tube.primerkey %}
+            Tray:{{tube.storage_tray_txt.item}} &nbsp;&nbsp; Grid: {{tube.storage_grid_txt.item}} </div>
+            {% endif %}
+            {% endfor %}
+        </div>
+        </div>
+        <br>
+        <div class="jumbotron">
+        <div class="container">
+        <div class="row">
+            <div class="col-md-12"><strong> Notes</strong></div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">{{pcr.notes}}</div>
+        </div>
+{% endif %}
+{% endfor %}
+{% endif %}
+{% endfor %}
+{% endif %}
+{% endfor %}
+{% endif %}
+{% endfor %}
+{% endif %}
+{% endblock %}
+
+<!--<table>
+<tr>
+<th> Primername </th>
+<th> gene name </th>
+<th> Chr </th>
+<th> Start </th>
+<th> Stop </th>
+<th> assay </th>
+
+</tr>
+<tr> 
+{% for item in query_result %}
+if item.primername == 
+<td>{{item.primername}}</td>
+<td>{{item.gene_symbol_2.approvedsymbol}}</td>
+<td>{{item.chromosome_table.chr}}</td>
+<td>{{item.start_stop.start}}</td>
+<td>{{item.start_stop.stop}}</td>
+<td>{{item.version_text.item}}</td>
+    </tr>
+    {% endfor %}
+</table> -->
+
+<!-- <form action ="." method = "post">
+	{{form}}
+	
+	<input type="submit" name="submit" value="Save">
+</form> -->
+
+
+
+

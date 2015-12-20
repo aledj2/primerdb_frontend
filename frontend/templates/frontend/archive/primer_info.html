@@ -1,0 +1,35 @@
+<!-- extends base -->
+{% extends "base.html" %}
+
+<!-- start block -->
+{% block content %}
+
+<!-- show the query result to test -->
+<!-- <p>{{query_results}}</p> -->
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+
+<table>
+<tr>
+<th> Product name </th>
+<th> Item </th>
+
+</tr>
+<tr> 
+{% for item in query_results %}     
+<td>{{item.productname}}</td>
+<td>{{item.items.item}}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+<form action ="." method = "post">
+	{{form}}
+	
+	<input type="submit" name="submit" value="Save">
+</form>
+{% endblock %}
