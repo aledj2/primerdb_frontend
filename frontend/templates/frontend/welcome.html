@@ -1,16 +1,26 @@
 <!--extends base -->
 {% extends "base.html" %}
+
 <!-- Import static -->
 {% load staticfiles %}
+
 {% block content %}
 
-{% endblock %}
-{% block content %}
 
-<h4>Welcome, Please log in</h4>
-<!-- <h4>language is:{{language}}</h4>
-<h4>session language is:{{session_language}}</h4> -->
+
+
+<body>
+<div class = "container">
+<a href="/add_primer_design/"><button class="btn btn-sm btn-primary" type="button">Add Primer Design</button>
+<a href="/find_primer_design/"><button class="btn btn-sm btn-primary" type="button">search for primer design</button>
+</div>
+</body>
+
 {% endblock %}
+
+
+
+
 
 <!-- Bootstrap core JavaScript
 ================================================== -->

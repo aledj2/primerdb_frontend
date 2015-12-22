@@ -1,0 +1,20 @@
+<!--extends base -->
+{% extends "base.html" %}
+
+<!-- Import static -->
+{% load staticfiles %}
+
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.js" type="text/javascript"></script>
+{% include 'autocomplete_light/static.html' %}
+
+{% block content %}
+<h2>Add Primer Design</h2>
+<form action="/add_primer_design/" method = "post">{% csrf_token %}
+<ul>{{approvedsymbollist}}</ul>
+<!-- <ul>{{Newprimerdesign_primerinformation.as_ul}}</ul>
+<ul>{{Newprimerdesign_snpcheck.as_ul}}</ul> -->
+
+<input type="submit" name="submit" value="Add New Primer Design">
+<a href="/welcome/"><button class="btn btn-sm btn-primary" type="button">Cancel</button>
+</form>
+{% endblock %}

@@ -33,6 +33,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = (
+    'autocomplete_light',  #must be above  'django.contrib.admin'
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -54,6 +55,7 @@ MIDDLEWARE_CLASSES = (
 )
 
 ROOT_URLCONF = 'PRIMERDB.urls'
+LOGIN_URL = '/login/'
 
 TEMPLATES = [
     {

@@ -429,6 +429,7 @@ class Primerinformation(models.Model):
     def assay_txt (self):
         return Item.objects.get(itemid=self.assay)
     
+    
     def __unicode__(self):
         return str(self.primerkey)
     

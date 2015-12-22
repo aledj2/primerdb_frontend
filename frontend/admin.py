@@ -1,4 +1,6 @@
 from django.contrib import admin
+import autocomplete_light
+
 from .models import Item
 from .models import Audit
 from .models import Blat
@@ -30,3 +32,9 @@ admin.site.register(Primerinfo)
 admin.site.register(Primerinformation)
 admin.site.register(Snpcheck)
 admin.site.register(Storage)
+
+# class Addressadmin(admin.ModelAdmin):
+# 	class Meta:
+# 		form = autocomplete_light.modelform_factory(Geneshgnc140714, fields='__all__')
+		
+# admin.site.register(Geneshgnc140714,Addressadmin)
