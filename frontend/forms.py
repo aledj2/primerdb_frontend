@@ -41,23 +41,26 @@ class add_new_primer4(forms.Form):
 class add_new_primer_summary(forms.Form):
 	pass
 
-
 class approvedsymbollist(forms.Form):
 	 gene_symbol_list = forms.TypedChoiceField(choices=Geneshgnc140714.objects.values_list('geneshgncid','approvedsymbol').order_by('-used','approvedsymbol'))
 	 exon = forms.IntegerField()
 	 tag = forms.TypedChoiceField(choices=Item.objects.filter(itemcategoryindex1id=54).values_list('item','item'))
 
 class findprimerform(forms.ModelForm):
-	
 	class Meta:
 		model=Primerinformation
 		fields=['primername', 'exon']
 
 class findprimerbygene_selectgene(forms.Form):
-	gene = forms.TypedChoiceField(label = "select gene",choices=Geneshgnc140714.objects.values_list('geneshgncid','approvedsymbol').filter(used__gte=1).order_by('approvedsymbol'))
+	gene = forms.TypedChoiceField(label = "select gene",widget=forms.Select(), choices=Geneshgnc140714.objects.values_list('geneshgncid','approvedsymbol').filter(used__gte=1).order_by('approvedsymbol'))
 
-class findprimerbygene_selectexon(forms.ModelForm):
-	exon = forms.TypedChoiceField(label = "select exon",choices=Primerinformation.objects.values_list('exon','exon'))
+class findprimerbygene_selectexon(forms.Form):
+	def __init__(self, geneid, *args, **kwargs):
+		geneid=kwargs.pop('geneid',None)
+		super(findprimerbygene_selectexon, self).__init__(*args, **kwargs)
+		
+	exon = forms.ChoiceField(label = "select exon", choices=Primerinformation.objects.values_list('exon','exon'))
+	
 
 class ItemForm(forms.Form):
 	version = forms.TypedChoiceField(choices=Item.objects.filter(itemcategoryindex1id=55).values_list('item','item'))

@@ -1,0 +1,20 @@
+<!--extends base -->
+{% extends "base.html" %}
+
+<!-- Import static -->
+{% load staticfiles %}
+{% block content %}
+<div class= "container">
+<div class= "jumbotron">
+
+{% for i in primerinformation %}
+<table>
+<tr>
+<a href="/primer_design/{{i.primerkey}}">{{i.primername}}</a>
+</tr>
+
+{% endfor %}
+</table>
+</div>
+</div>
+{% endblock %}

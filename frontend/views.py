@@ -9,6 +9,7 @@ from django.shortcuts import render, get_object_or_404
 from django.core.context_processors import csrf
 from django.template import RequestContext
 from django.views.decorators.csrf import csrf_exempt
+from django import forms
 from .models import Chromosome, Primerinformation, Pcrproducts, Primerinfo, Blat, Item, Geneshgnc140714, Snpcheck, Storage, Audit
 from .forms import *
 from formtools.wizard.views import SessionWizardView
@@ -140,12 +141,40 @@ def bad_user(request):
 
 
 #@login_required(login_url='/sorry_login_required/')
+
+def find_primer_by_gene_select_exons(request, geneshgncid):
+    args={}
+    geneid=int(geneshgncid)
+    args['geneshgncid']=int(geneshgncid)
+
+    if request.POST:
+        submittedform = findprimerbygene_selectexon(request.POST)
+        #submittedform.save()
+        exon=request.POST.get("exon","")
+        return HttpResponseRedirect("/findprimerbygene/"+str(geneid)+"/"+str(exon))
+    else:
+        form = findprimerbygene_selectexon(geneid)
+
+    if Primerinformation.objects.filter(geneshgncid=geneid).exists():
+        gene=Geneshgnc140714.objects.filter(geneshgncid=geneid).values_list('approvedsymbol',flat=True)
+        list=[]
+        list.extend(gene)
+        for i in list:
+            genename=i
+
+    args['gene']=genename
+    args.update(csrf(request))
+    args['form'] = form
+    #return HttpResponse(geneid)
+    return render_to_response('frontend/findprimerbyexon.html',args, context_instance=RequestContext(request))
+
+
 def find_primer_by_gene_select_gene(request):
     if request.POST:
         submittedform = findprimerbygene_selectgene(request.POST)
         if submittedform.is_valid():
             gene=submittedform.cleaned_data['gene']
-            return HttpResponseRedirect("/primer_design/"+str(gene))
+            return HttpResponseRedirect("/findprimerbygene/"+str(gene))
     else:
         form = findprimerbygene_selectgene
     
@@ -154,7 +183,16 @@ def find_primer_by_gene_select_gene(request):
     args['form'] = form
     return render_to_response('frontend/findprimerbygene.html',args, context_instance=RequestContext(request))
 
-
+def display_primers_matching_geneexon(request,geneshgncid,exon):
+    geneid_input=geneshgncid
+    exon_input=exon
+    
+    args={}
+    primerinformation = Primerinformation.objects.filter(exon=exon_input).filter(geneshgncid=geneid_input).all()
+    args['primerinformation']=primerinformation
+    args.update(csrf(request))
+    return render_to_response('frontend/geneexonprimerresults.html',args, context_instance=RequestContext(request))
+#def find_primer_by_gene_name(request):
 
 @login_required(login_url='/sorry_login_required/')
 def find_primer_design(request):
