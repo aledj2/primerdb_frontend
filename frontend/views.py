@@ -138,6 +138,24 @@ def bad_user(request):
 #     chromosome = get_object_or_404(Chromosome, pk=pk)
 #     return render (request, "frontend/chromosome_page.html", {'chromosome':chromosome})
 
+
+#@login_required(login_url='/sorry_login_required/')
+def find_primer_by_gene_select_gene(request):
+    if request.POST:
+        submittedform = findprimerbygene_selectgene(request.POST)
+        if submittedform.is_valid():
+            gene=submittedform.cleaned_data['gene']
+            return HttpResponseRedirect("/primer_design/"+str(gene))
+    else:
+        form = findprimerbygene_selectgene
+    
+    args={}
+    args.update(csrf(request))
+    args['form'] = form
+    return render_to_response('frontend/findprimerbygene.html',args, context_instance=RequestContext(request))
+
+
+
 @login_required(login_url='/sorry_login_required/')
 def find_primer_design(request):
     if request.POST:
@@ -151,10 +169,10 @@ def find_primer_design(request):
     args={}
     args.update(csrf(request))
     args['findprimerform'] = findprimer
-    return render_to_response('frontend/viewprimerdesign.html',args, context_instance=RequestContext(request))
+    return render_to_response('frontend/findprimerdesign.html',args, context_instance=RequestContext(request))
 
-# def home(request):
-#     return render_to_response('frontend/home.html')
+def home(request):
+    return render_to_response('frontend/home.html')
     
 
 def login(request):

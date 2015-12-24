@@ -48,9 +48,16 @@ class approvedsymbollist(forms.Form):
 	 tag = forms.TypedChoiceField(choices=Item.objects.filter(itemcategoryindex1id=54).values_list('item','item'))
 
 class findprimerform(forms.ModelForm):
+	
 	class Meta:
 		model=Primerinformation
 		fields=['primername', 'exon']
+
+class findprimerbygene_selectgene(forms.Form):
+	gene = forms.TypedChoiceField(label = "select gene",choices=Geneshgnc140714.objects.values_list('geneshgncid','approvedsymbol').filter(used__gte=1).order_by('approvedsymbol'))
+
+class findprimerbygene_selectexon(forms.ModelForm):
+	exon = forms.TypedChoiceField(label = "select exon",choices=Primerinformation.objects.values_list('exon','exon'))
 
 class ItemForm(forms.Form):
 	version = forms.TypedChoiceField(choices=Item.objects.filter(itemcategoryindex1id=55).values_list('item','item'))

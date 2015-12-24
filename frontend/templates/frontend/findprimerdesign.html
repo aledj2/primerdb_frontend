@@ -1,0 +1,24 @@
+<!--extends base -->
+{% extends "base.html" %}
+
+<!-- Import static -->
+{% load staticfiles %}
+{% block content %}
+<div class= "container">
+<div class= "jumbotron">
+<a href="/findprimerbygene/"><button class="btn btn-lg btn-primary btn-block"> Search by Gene Name</button></a>
+</div>
+</div>
+<div class= "container">
+<div class= "jumbotron">
+<a href=""><button class="btn btn-lg btn-primary btn-block"> Search by Primer Name</button></a>
+</div>
+</div>
+<div class= "container">
+<div class= "jumbotron">
+<a href=""><button class="btn btn-lg btn-primary btn-block"> Search by Genomic coordinate</button></a>
+</div>
+</div>
+
+
+{% endblock %}
