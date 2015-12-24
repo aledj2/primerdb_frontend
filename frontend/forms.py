@@ -13,7 +13,7 @@ class add_new_primer1(forms.Form):
 class add_new_primer2(forms.Form):
 	tag = forms.ChoiceField(choices=Item.objects.filter(itemcategoryindex1id=54).values_list('itemid','item'))
 	sequence = forms.CharField()
-	chromosome = forms.ChoiceField(choices=Chromosome.objects.filter(sorting__lte=25).values_list('chrid','chr'))
+	chromosome = forms.ChoiceField(choices=Chromosome.objects.filter(sorting__gte=100).filter(sorting__lte=125).values_list('chrid','chr'))
 	start = forms.IntegerField()	
 	stop = forms.IntegerField()	
 	strand = forms.ChoiceField(choices=Item.objects.filter(itemcategoryindex1id=52).values_list('itemid','item'))
@@ -40,25 +40,6 @@ class add_new_primer4(forms.Form):
 
 class add_new_primer_summary(forms.Form):
 	pass
-	#ene=formset-1.
-
-	#def display_entered_data(self):
-		# Gene = self.cleaned_data['gene_symbol_list']
-		# return Gene
-	#	pass
-
-	# def save(self, commit=True):
-	# 	user = super(MyRegistrationForm, self).save(commit=False)
-	# 	user.email=self.cleaned_data['email']
-	# 	user.first_name=self.cleaned_data['first_name']
-	# 	user.last_name=self.cleaned_data['last_name']
-		
-	# 	if commit:
-	# 		user.save()
-	# 	return user
-
-		# return Gene
-	
 
 
 class approvedsymbollist(forms.Form):

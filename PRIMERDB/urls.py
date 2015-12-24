@@ -13,10 +13,16 @@ Including another URLconf
     1. Add an import:  from blog import urls as blog_urls
     2. Add a URL to urlpatterns:  url(r'^blog/', include(blog_urls))
 """
-from django.conf.urls import include, url
+from django.conf.urls import include, url, patterns
 from django.contrib import admin
 from frontend.forms import *
 from frontend.views import add_primer_design_wizard
+from django.conf import settings
+
+#x=''
+#if settings.DEBUG:
+    #import debug_toolbar
+    #x=url(r'^__debug__/', include(debug_toolbar.urls)),
 
 urlpatterns = [
     url(r'^$','frontend.views.login', name='home'),
@@ -34,10 +40,13 @@ urlpatterns = [
     url(r'^name/$','frontend.views.name', name = 'name'),
     #url(r'^new_primer_design_summary/$',frontend.views)
     url(r'^primer_info/$','frontend.views.primer_info', name='primer_info'),
-    url(r'^primer_design/$','frontend.views.primer_design', name='primer_design'),
+    url(r'^primer_design/(?P<primerkey>[0-9]+)/$','frontend.views.primer_design', name='primer_design'),
     url(r'^testoutput/$','frontend.views.test_output', name='test_output'),
     url(r'^register/$','frontend.views.register_user', name='register_user'),
     url(r'^register_success/$','frontend.views.register_success', name='register_success'),
     # url(r'^view1/$','frontend.views.view1',name='view1'),
     url(r'^welcome/$','frontend.views.welcome', name='welcome'),
+    #x
     ]
+
+

@@ -42,12 +42,14 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'frontend',
     'formtools',
+    'debug_toolbar',
 )
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -57,7 +59,7 @@ MIDDLEWARE_CLASSES = (
 
 ROOT_URLCONF = 'PRIMERDB.urls'
 LOGIN_URL = '/login/'
-
+DEBUG_TOOLBAR_PATCH_SETTINGS = False
 
 TEMPLATES = [
     {

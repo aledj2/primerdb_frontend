@@ -1,3 +1,4 @@
+
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib import auth
@@ -12,26 +13,6 @@ from .models import Chromosome, Primerinformation, Pcrproducts, Primerinfo, Blat
 from .forms import *
 from formtools.wizard.views import SessionWizardView
 
-# @login_required(login_url='/sorry_login_required/')
-# def add_primer_design(request):
-#     addprimer={}
-#     if request.POST:
-#         form = NewPrimerdesign(request.POST)
-#         if form.is_valid():
-#             request.session()
-#             return HttpResponseRedirect('/primerinformation/')
-#     else:
-#         Newprimerdesign_primerinformation_form = Newprimerdesign_primerinformation
-    
-#     args={}
-#     args.update(csrf(request))
-#     args['Newprimerdesign_primerinformation'] = Newprimerdesign_primerinformation_form
-#     Newprimerdesign_snpcheck_form=Newprimerdesign_snpcheck
-#     args['Newprimerdesign_snpcheck'] = Newprimerdesign_snpcheck_form
-#     list_of_genes=approvedsymbollist
-#     args['approvedsymbollist']=list_of_genes
-    
-#     return render_to_response('frontend/addprimerdesign.html',args,context_instance=RequestContext(request))
 
 addprimerdesignforms=[("page1", add_new_primer1),("page2", add_new_primer2),("page3", add_new_primer3),("page4", add_new_primer4)]#,("page5", add_new_primer_summary)]
 addprimerdesigntemplates = {"0":"frontend/addprimerdesignwizard.html", "1":"frontend/addprimerdesignwizard.html","2":"frontend/addprimerdesignwizard.html", "3":"frontend/addprimerdesignwizard.html"}#}, "4":"frontend/new_primer_design_summary.html"}
@@ -61,23 +42,65 @@ class add_primer_design_wizard(SessionWizardView):
         #primername=
         sequence=args['all_data']['sequence']
         mod=args['all_data']['tag']
-
-        #gene['list_of_data']=list_of_data
-        # args={}
-        # args('list_of_keys')=list_of_keys
-
-        #     if key =="gene":
-        #         gene=form_dict[key]
+        pcrcond=args['all_data']['pcrconditions']
+        pcrprogram=args['all_data']['pcrprogram']
+        assay=args['all_data']['assay']
+        ucsc=args['all_data']['ucsc']
         
-        if gene is not None:
-            primer=Primerinformation(geneshgncid=gene, exon=exon,exon_2=exon2,sequence=sequence,chromosome=chrom,modification=mod)
-            commit=True
+        if Primerinformation.objects.filter(geneshgncid=gene).filter(exon=exon).exists():
+            max_current_version=Primerinformation.objects.filter(geneshgncid=gene).filter(exon=exon).values_list('version',flat=True).order_by('-version')[:1]
+            list=[]
+            list.extend(max_current_version)
+            for i in list:
+                new_version=int(i)+1
+        else:
+            new_version=333
+
+        
+        item_version=Item.objects.filter(itemid=new_version).get()
+        version_text=item_version.item
+        
+        item_tag=Item.objects.filter(itemid=mod).get()
+        tag_text=item_tag.item
+        
+        gene_entry=Geneshgnc140714.objects.filter(geneshgncid=gene).get()
+        genename=gene_entry.approvedsymbol
+
+
+        primername=genename+"_ex"+str(exon)+"_"+tag_text+"_"+version_text
+
+        commit=True
+        primer=Primerinformation(geneshgncid=gene, exon=exon, exon_2=exon2, sequence=sequence, chromosome=chrom, modification=mod, pcrconditions=pcrcond, pcrprogram=pcrprogram, ucsc=ucsc, assay=assay, version=new_version, primername=primername)
 
         if commit:
             primer.save()
-            primer.primerkey
+            primerkey=primer.primerkey
         
-        return HttpResponse(primer.primerkey)
+        strand=args['all_data']['strand']
+        start=args['all_data']['start']
+        stop=args['all_data']['stop']
+        genomebuild=args['all_data']['genomebuild']
+        
+        blat=Blat(primerkey=primerkey, strand=strand, start=start, stop=stop, genomebuild=genomebuild)
+        blat.save()
+
+        result=args['all_data']['result']
+        snpchecked=args['all_data']['snpchecked']
+        datechecked=args['all_data']['dateofsnpcheck']
+        dbbuild=args['all_data']['dbbuild']
+        rs1=args['all_data']['rs1']
+        rs2=args['all_data']['rs2']
+        rs3=args['all_data']['rs3']
+        nt=args['all_data']['nt']
+        notes=args['all_data']['notes']
+        validated=args['all_data']['validated']
+
+        snpcheck=Snpcheck(result=result,snpchecked=snpchecked,dateofsnpcheck=datechecked,dbbuild=dbbuild,rs1=rs1,rs2=rs2,rs3=rs1,nt=nt,notes=notes,validated=validated, primerkey=primerkey)
+        snpcheck.save()
+        
+        #pk=primerkey
+        return HttpResponseRedirect("/primer_design/"+str(primerkey))
+        #return primer_design(primerkey)
 
 
 @login_required(login_url='/sorry_login_required/')
@@ -128,16 +151,16 @@ def find_primer_design(request):
     args={}
     args.update(csrf(request))
     args['findprimerform'] = findprimer
-    return render_to_response('frontend/viewprimerdesign.html',args,context_instance=RequestContext(request))
+    return render_to_response('frontend/viewprimerdesign.html',args, context_instance=RequestContext(request))
 
 # def home(request):
 #     return render_to_response('frontend/home.html')
     
 
 def login(request):
-    c = {}
-    c.update(csrf(request))
-    return render_to_response('frontend/login.html', c,context_instance=RequestContext(request))
+    args = {}
+    args.update(csrf(request))
+    return render_to_response('frontend/login.html', args, context_instance=RequestContext(request))
 
 def sorry_login_required(request):
     return render_to_response ('frontend/sorry_login_required.html',context_instance=RequestContext(request))
@@ -166,10 +189,9 @@ def name(request):
     return render(request, "frontend/name.html", {'form': form})
 
 @login_required(login_url='/sorry_login_required/')
-def primer_design(request,primerid):
+def primer_design(request, primerkey):
     args={}
-    primerid = primerid
-    args['pid']=primername
+    args['primerkey']=int(primerkey)
     primerinformation = Primerinformation.objects.all()
     args['primerinformation']=primerinformation
     blattable=Blat.objects.all()
@@ -185,6 +207,8 @@ def primer_design(request,primerid):
     pcrproducts_table=Pcrproducts.objects.all()
     args['pcrproducts']=pcrproducts_table
     return render_to_response("frontend/primer_design.html", args,context_instance=RequestContext(request))
+    
+    return HttpResponseRedirect(reverse(contact_details, args=(new_contact.pk,)))
 
 @login_required(login_url='/sorry_login_required/')
 def primer_info(request):

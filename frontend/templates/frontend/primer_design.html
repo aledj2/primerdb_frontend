@@ -14,8 +14,13 @@
 <div class="container">
 
 <!-- get the Primername -->
-{% if pid != none %}
-  <h3>  {{pid}}  </h3>
+{% if primerkey != none %}
+{% for primer in primerinformation %}
+{% if primer.primerkey == primerkey %}
+<p>{{primer.primername}}</p>
+
+{% endif %}
+{% endfor %}
 {% endif %}
 
 
@@ -29,12 +34,10 @@
 <div class="jumbotron">
       <div class="container">
 <!-- set primername again -->
-{% if PN != none %}
-{% endif %}
 
 <!-- Look up primer -->
 {% for primer in primerinformation %}
-{% if primer.primername == PN %}
+{% if primer.primerkey == primerkey %}
 {% for Blat in blat %}
 {% if primer.primerkey == Blat.primerkey %}
 
@@ -62,15 +65,21 @@
   <div class="col-md-2">{{primer.sequence}}</div>
   <div class="col-md-2">{{primer.modification_text.item}}</div>
   <div class="col-md-3">
+
     <div class ="row">
         {% for pcr in pcrproducts %}
         {% if primer.primerkey == pcr.fprimerid or primer.primerkey == pcr.rprimerid %}
             <div class="col-md-12">{{pcr.productname}}</div>
+        {% else %}
+            <div class="col-md-12"></div>
+    
     </div>
 </div>
+
 </div>
 </div>
 </div>
+
 <!-- SNP check -->
 <div class="jumbotron">
 <div class="container">
@@ -134,6 +143,10 @@
 <div class="col-md-1"> {{audit.shipmentdate}}</div>
 <!-- close row -->
 </div>
+{% endif %}
+{% endfor %}
+{% endif %}
+{% endfor %}
 <!-- close container -->
 </div>
 <!-- close class -->
@@ -172,20 +185,19 @@
 </div>
 <!-- close class -->
 </div>
-<br>
+
+
+
 {% endif %}
 {% endfor %}
 {% endif %}
 {% endfor %}
 {% endif %}
-{% endfor %}
-{% endif %}
-{% endfor %}
-{% endif %}
 {% endif %}
 {% endfor %}
 {% endif %}
 {% endfor %}
+
 
 
 <!--<table>
