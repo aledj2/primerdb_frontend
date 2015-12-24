@@ -14,8 +14,8 @@
 <div class="container">
 
 <!-- get the Primername -->
-{% if PN != none %}
-  <h3>  {{PN}}  </h3>
+{% if pid != none %}
+  <h3>  {{pid}}  </h3>
 {% endif %}
 
 
@@ -48,6 +48,7 @@
   <div class="col-md-1">Strand</div>
   <div class="col-md-2">Genome build</div>
   <div class="col-md-2">Sequence</div>
+  <div class="col-md-1">Sequence</div>
   <div class="col-md-3">Amplicons using this primer</div>
   <!-- <div class="col-md-3">Start</div>
   <div class="col-md-3">Stop</div> -->
@@ -59,6 +60,7 @@
   <div class="col-md-1">{{Blat.strandtxt.item}}</div>
   <div class="col-md-2">{{Blat.genomebuild_txt.item}}</div>
   <div class="col-md-2">{{primer.sequence}}</div>
+  <div class="col-md-2">{{primer.modification_text.item}}</div>
   <div class="col-md-3">
     <div class ="row">
         {% for pcr in pcrproducts %}

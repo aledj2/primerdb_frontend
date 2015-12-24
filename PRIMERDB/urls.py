@@ -15,10 +15,13 @@ Including another URLconf
 """
 from django.conf.urls import include, url
 from django.contrib import admin
+from frontend.forms import *
+from frontend.views import add_primer_design_wizard
 
 urlpatterns = [
     url(r'^$','frontend.views.login', name='home'),
     url(r'^add_primer_design/$','frontend.views.add_primer_design',name='add_primer_design'),
+    url(r'^add_primer_design_wizard/$', add_primer_design_wizard.as_view([add_new_primer1, add_new_primer2, add_new_primer3, add_new_primer4])),#, add_new_primer_summary])),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^amplicon_design/$','frontend.views.amplicon_design', name='amplicon_design'),
     url(r'^auth/$','frontend.views.auth_view', name='auth_view'),
@@ -26,11 +29,13 @@ urlpatterns = [
     url(r'^find_primer_design/$','frontend.views.find_primer_design',name='find_primer_design'),
     url(r'^home/$', 'frontend.views.login', name='home'),
     url(r'^login/$','frontend.views.login', name='login'),    
+    url(r'^sorry_login_required/$','frontend.views.sorry_login_required', name='sorry_login_required'),    
     url(r'^logout/$','frontend.views.logout', name='logout'),
     url(r'^name/$','frontend.views.name', name = 'name'),
+    #url(r'^new_primer_design_summary/$',frontend.views)
     url(r'^primer_info/$','frontend.views.primer_info', name='primer_info'),
     url(r'^primer_design/$','frontend.views.primer_design', name='primer_design'),
-    # url(r'^loggedin/$','frontend.views.loggedin', name='loggedin'),
+    url(r'^testoutput/$','frontend.views.test_output', name='test_output'),
     url(r'^register/$','frontend.views.register_user', name='register_user'),
     url(r'^register_success/$','frontend.views.register_success', name='register_success'),
     # url(r'^view1/$','frontend.views.view1',name='view1'),

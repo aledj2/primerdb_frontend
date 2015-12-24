@@ -4,17 +4,33 @@
 <!-- Import static -->
 {% load staticfiles %}
 
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.js" type="text/javascript"></script>
-{% include 'autocomplete_light/static.html' %}
-
 {% block content %}
+<div class="container">
+<div class="jumbotron">
 <h2>Add Primer Design</h2>
 <form action="/add_primer_design/" method = "post">{% csrf_token %}
 <ul>{{approvedsymbollist}}</ul>
+<ul>{{exon}}</ul>
+<ul>{{tag}}</ul>
 <!-- <ul>{{Newprimerdesign_primerinformation.as_ul}}</ul>
 <ul>{{Newprimerdesign_snpcheck.as_ul}}</ul> -->
 
-<input type="submit" name="submit" value="Add New Primer Design">
-<a href="/welcome/"><button class="btn btn-sm btn-primary" type="button">Cancel</button>
+<!-- <input type="submit" name="submit" value="Add New Primer Design"> -->
+<a href="add_primer_design_2"><button class="btn btn-sm btn-primary" type="button">Next</button></a>
+<a href="/welcome/"><button class="btn btn-sm btn-primary" type="button">Cancel</button></a>
 </form>
+</div>
+</div>
+
+
+Page 1 - Primername
+1) select gene and exon
+2) add tag
+3) calculates version and creates primername
+
+Page 2 - Blat
+1)select chromosome
+2) enter start and stop
+
+Page 3 - 
 {% endblock %}

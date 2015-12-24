@@ -1,0 +1,151 @@
+<!-- extends base -->
+{% extends "base.html" %}
+
+<!-- Import static -->
+{% load staticfiles %}
+
+<!-- Custom styles for this template -->
+<link href="{%static 'frontend/css/jumbotron.css' %}" rel="stylesheet">
+
+<!-- start title block -->
+{% block title %}
+{% endblock %}
+
+
+<!-- start content block -->
+{% block content %}
+{{all_data}}
+<br>
+<div class="jumbotron">
+<div class="container">
+<h2> Confirm data</h2>
+</div>
+</div>
+<form action="" method="post">{% csrf_token %}
+<div class="jumbotron">
+<div class="container">
+<h2>Primername = {{all_data.gene}}_{{all_data.exon}}_{{all_data.tag}}_VERSION</h2>
+</div>
+</div>
+
+<div class="jumbotron">
+<div class="container">
+<div class="row">
+<strong> 
+  <div class="col-md-2">Gene</div>
+  <div class="col-md-2">Exon</div>
+  <div class="col-md-2">Location</div>
+  <div class="col-md-1">Strand</div>
+  <div class="col-md-1">Genome build</div>
+  <div class="col-md-1">Tag</div>
+  <div class="col-md-3">Sequence</div>
+  <!-- <div class="col-md-3">Start</div>
+  <div class="col-md-3">Stop</div> -->
+</strong>
+</div>
+<div class="row">
+  <div class="col-md-2">{{all_data.gene}}</div>
+  <div class="col-md-2">{{all_data.exon}}</div>
+  <div class="col-md-2">{{all_data.chromosome}}:{{all_data.start}}-{{all_data.stop}}</div>
+  <div class="col-md-1">{{all_data.strand}}</div>
+  <div class="col-md-1">{{all_data.genomebuild}}</div>
+  <div class="col-md-1">{{all_data.tag}}</div>
+  <div class="col-md-3">{{all_data.sequence}}</div>
+</div>
+</div>
+</div>
+
+<!-- SNP check -->
+<div class="jumbotron">
+<div class="container">
+<p> SNP Check </p>
+<div class="row">
+<strong> 
+  <div class="col-md-1">SNP checked?</div>
+  <div class="col-md-2">Result</div>
+  <div class="col-md-2">Date checked</div>
+  <div class="col-md-2">SNPdb build</div>
+  <div class="col-md-1">NT</div>
+  <div class="col-md-3">RS #</div>
+  <div class="col-md-1">Validated</div>
+  <!-- <div class="col-md-3">Start</div>
+  <div class="col-md-3">Stop</div> -->
+</strong>
+</div>
+<div class="row">
+  <div class="col-md-1">{{all_data.snpchecked}}</div>
+  <div class="col-md-2">{{all_data.result}}</div>
+  <div class="col-md-2">{{all_data.dateofsnpcheck}}</div>
+  <div class="col-md-2">{{all_data.dbbuild}}</div>
+  <div class="col-md-1">{{all_data.nt}}</div>
+  <div class="col-md-3">{% if all_data.rs1 != none %} {{all_data.rs1}} {% endif %}{% if all_data.rs2 != none %} {{all_data.rs2}}{% endif %} {% if all_data.rs3 != none %} {{all_data.rs3}}{% endif %}</div>
+  <div class="col-md-1">{{all_data.validated}}</div>
+</div>
+</div>
+</div>
+
+<!-- Assay -->
+<div class="jumbotron">
+<div class="container">
+<p> Assay </p>
+<strong> 
+<div class="col-md-3">Assay</div>
+<div class="col-md-3">PCR prog</div>
+<div class="col-md-3">PCR conditions</div>
+<div class="col-md-3">UCSC</div>
+</strong>
+</div>
+<div class="row">
+<div class="col-md-3">{{all_data.assay}}</div>
+<div class="col-md-3">{{all_data.pcrprogram}}</div>
+<div class="col-md-3"> {{all_data.pcrconditions}} </div>
+<div class="col-md-3">{{all_data.ucsc}}</div>
+<!-- close row -->
+</div>
+<!-- close container -->
+</div>
+<!-- close class -->
+</div>
+<!-- Notes -->
+<div class="jumbotron">
+<div class="container">
+<p> Notes </p>
+<div class="row">
+<div class="col-md-12"> {{all_data.notes}} </div>
+<!-- close row -->
+</div>
+<!-- close container -->
+</div>
+<!-- close class -->
+</div>
+<div class="container">
+<div class="jumbotron">
+<form action="" method="post">{% csrf_token %}
+<table>
+{{ wizard.management_form }}
+{% if wizard.form.forms %}
+    {{ wizard.form.management_form }}
+    {% for form in wizard.form.forms %}
+        {{ form }}
+    {% endfor %}
+{% else %}
+    {{ wizard.form }}
+{% endif %}
+</table>
+
+{% if wizard.steps.current == wizard.steps.last %} <input type="submit"
+value="submit"/> {% else %} <input type="submit" value="next"/> {% endif %}
+</form> </div> </div> {% endblock %}
+
+Page 1 - Primername
+1) select gene and exon
+2) add tag
+3) calculates version and creates primername
+
+Page 2 - Blat
+1) select chromosome
+2) enter start and stop
+
+Page 3 - 
+<!-- create name by concatenating gene_exon_tag_version -->
+

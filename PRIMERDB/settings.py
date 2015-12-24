@@ -41,6 +41,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'frontend',
+    'formtools',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -57,10 +58,11 @@ MIDDLEWARE_CLASSES = (
 ROOT_URLCONF = 'PRIMERDB.urls'
 LOGIN_URL = '/login/'
 
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')],
+        'DIRS': [os.path.join(BASE_DIR, 'templates'), os.path.join],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

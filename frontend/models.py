@@ -207,6 +207,7 @@ class Geneshgnc140714(models.Model):
     ucscidmapped = models.CharField(db_column='UCSCIDmapped', max_length=50, blank=True, null=True)  # Field name made lowercase.
     refseqguys = models.CharField(db_column='RefSeqGuys', max_length=50, blank=True, null=True)  # Field name made lowercase.
     refseqguysupdated = models.DateTimeField(db_column='RefSeqGuysUpdated', blank=True, null=True)  # Field name made lowercase.
+    used = models.IntegerField(db_column='used',blank=True,null=True)
     def __unicode__(self):
         return str(self.geneshgncid)
     class Meta:

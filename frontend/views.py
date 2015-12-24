@@ -9,29 +9,78 @@ from django.core.context_processors import csrf
 from django.template import RequestContext
 from django.views.decorators.csrf import csrf_exempt
 from .models import Chromosome, Primerinformation, Pcrproducts, Primerinfo, Blat, Item, Geneshgnc140714, Snpcheck, Storage, Audit
-from .forms import NameForm, ItemForm, MyRegistrationForm, Newprimerdesign_primerinformation, Newprimerdesign_snpcheck, approvedsymbollist, findprimerform
+from .forms import *
+from formtools.wizard.views import SessionWizardView
 
-
-def add_primer_design(request):
-    if request.POST:
-        form = NewPrimerdesign(request.POST)
-        if form.is_valid():
-            form.save()
-            return HttpResponseRedirect('/primerinformation/')
-    else:
-        Newprimerdesign_primerinformation_form = Newprimerdesign_primerinformation
+# @login_required(login_url='/sorry_login_required/')
+# def add_primer_design(request):
+#     addprimer={}
+#     if request.POST:
+#         form = NewPrimerdesign(request.POST)
+#         if form.is_valid():
+#             request.session()
+#             return HttpResponseRedirect('/primerinformation/')
+#     else:
+#         Newprimerdesign_primerinformation_form = Newprimerdesign_primerinformation
     
-    args={}
-    args.update(csrf(request))
-    args['Newprimerdesign_primerinformation'] = Newprimerdesign_primerinformation_form
-    Newprimerdesign_snpcheck_form=Newprimerdesign_snpcheck
-    args['Newprimerdesign_snpcheck'] = Newprimerdesign_snpcheck_form
-    list_of_genes=approvedsymbollist
-    args['approvedsymbollist']=list_of_genes
+#     args={}
+#     args.update(csrf(request))
+#     args['Newprimerdesign_primerinformation'] = Newprimerdesign_primerinformation_form
+#     Newprimerdesign_snpcheck_form=Newprimerdesign_snpcheck
+#     args['Newprimerdesign_snpcheck'] = Newprimerdesign_snpcheck_form
+#     list_of_genes=approvedsymbollist
+#     args['approvedsymbollist']=list_of_genes
     
-    return render_to_response('frontend/addprimerdesign.html',args,context_instance=RequestContext(request))
+#     return render_to_response('frontend/addprimerdesign.html',args,context_instance=RequestContext(request))
+
+addprimerdesignforms=[("page1", add_new_primer1),("page2", add_new_primer2),("page3", add_new_primer3),("page4", add_new_primer4)]#,("page5", add_new_primer_summary)]
+addprimerdesigntemplates = {"0":"frontend/addprimerdesignwizard.html", "1":"frontend/addprimerdesignwizard.html","2":"frontend/addprimerdesignwizard.html", "3":"frontend/addprimerdesignwizard.html"}#}, "4":"frontend/new_primer_design_summary.html"}
+
+#@login_required(login_url='/sorry_login_required/')
+class add_primer_design_wizard(SessionWizardView):
+
+    def get_context_data(self, form, **kwargs):
+        args = super(add_primer_design_wizard, self).get_context_data(form=form, **kwargs)
+        if self.steps.current == '4':
+            args.update({'all_data': self.get_all_cleaned_data()})
+        return args
+
+    def get_template_names(self):
+        return [addprimerdesigntemplates[self.steps.current]]
+
+    def done(self,form_list,form_dict,**kwargs):
+        args={}
+        for i in form_dict:
+            data = super(add_primer_design_wizard, self).get_context_data(form=i, **kwargs)
+            args.update({'all_data': self.get_all_cleaned_data()})
+        
+        gene=args['all_data']['gene']
+        exon=args['all_data']['exon']
+        exon2=args['all_data']['exon']
+        chrom=args['all_data']['chromosome']
+        #primername=
+        sequence=args['all_data']['sequence']
+        mod=args['all_data']['tag']
+
+        #gene['list_of_data']=list_of_data
+        # args={}
+        # args('list_of_keys')=list_of_keys
+
+        #     if key =="gene":
+        #         gene=form_dict[key]
+        
+        if gene is not None:
+            primer=Primerinformation(geneshgncid=gene, exon=exon,exon_2=exon2,sequence=sequence,chromosome=chrom,modification=mod)
+            commit=True
+
+        if commit:
+            primer.save()
+            primer.primerkey
+        
+        return HttpResponse(primer.primerkey)
 
 
+@login_required(login_url='/sorry_login_required/')
 def amplicon_design(request):
     args={}
     productid = 1
@@ -66,6 +115,7 @@ def bad_user(request):
 #     chromosome = get_object_or_404(Chromosome, pk=pk)
 #     return render (request, "frontend/chromosome_page.html", {'chromosome':chromosome})
 
+@login_required(login_url='/sorry_login_required/')
 def find_primer_design(request):
     if request.POST:
         form = findprimerform(request.POST)
@@ -88,6 +138,9 @@ def login(request):
     c = {}
     c.update(csrf(request))
     return render_to_response('frontend/login.html', c,context_instance=RequestContext(request))
+
+def sorry_login_required(request):
+    return render_to_response ('frontend/sorry_login_required.html',context_instance=RequestContext(request))
 
 def logout(request):
     auth.logout(request)
@@ -112,10 +165,11 @@ def name(request):
 
     return render(request, "frontend/name.html", {'form': form})
 
-def primer_design(request):
+@login_required(login_url='/sorry_login_required/')
+def primer_design(request,primerid):
     args={}
-    primername = "ABAT_Ex5_Tag1F_V1"
-    args['PN']=primername
+    primerid = primerid
+    args['pid']=primername
     primerinformation = Primerinformation.objects.all()
     args['primerinformation']=primerinformation
     blattable=Blat.objects.all()
@@ -132,6 +186,7 @@ def primer_design(request):
     args['pcrproducts']=pcrproducts_table
     return render_to_response("frontend/primer_design.html", args,context_instance=RequestContext(request))
 
+@login_required(login_url='/sorry_login_required/')
 def primer_info(request):
     args = {}
     query_results = Pcrproducts.objects.all()
@@ -141,6 +196,9 @@ def primer_info(request):
     
     return render_to_response("frontend/primer_info.html", args,context_instance=RequestContext(request))
 
+def test_output(request):
+    # args('list_of_keys')=request.list_of_keys
+    return render_to_response('frontend/test_output.html',args,context_instance=RequestContext(request))
 
 def register_success(request):
     return render_to_response('frontend/register_success.html')
@@ -162,7 +220,7 @@ def register_user(request):
 # def view1(request):
 #     return render_to_response("frontend/view1.html", {'chromosome_list': Chromosome.objects.all()})
 
-
+@login_required(login_url='/sorry_login_required/')
 def welcome(request):
     args={}
     return render_to_response('frontend/welcome.html',context_instance=RequestContext(request))
