@@ -10,8 +10,10 @@ from django.core.context_processors import csrf
 from django.template import RequestContext
 from django.views.decorators.csrf import csrf_exempt
 from django import forms
+from django.db.models import Q
 from .models import Chromosome, Primerinformation, Pcrproducts, Primerinfo, Blat, Item, Geneshgnc140714, Snpcheck, Storage, Audit
 from .forms import *
+import operator
 from formtools.wizard.views import SessionWizardView
 
 
@@ -200,10 +202,49 @@ def display_primers_matching_geneexon(request,geneshgncid,exon):
     args.update(csrf(request))
     return render_to_response('frontend/geneexonprimerresults.html',args, context_instance=RequestContext(request))
 
+@login_required(login_url='/sorry_login_required/')
+def findprimerbycoord(request):
+    if request.POST:
+        form = findprimerbycoordform(request.POST)
+        if form.is_valid():
+            chr = form.cleaned_data['chromosome']
+            pos = int(form.cleaned_data['position'])
+            start = pos - 500
+            stop = pos + 500
+            blat_results = Blat.objects.filter(start__gte=start).filter(stop__lte=stop).all()
+            list_of_primers_in_range=[]
+            for i in blat_results:
+                list_of_primers_in_range.append(i.primerkey)
+            args2={}
+            allprimers = Primerinformation.objects.filter(chromosome=chr).all()
+            args2['allprimers']=allprimers
+            matchingprimers=list_of_primers_in_range
+            args2['matchingprimers']=matchingprimers
+            args2.update(csrf(request))
+            return render_to_response('frontend/primerresultscoords.html',args2, context_instance=RequestContext(request))
+
+    else:
+        form = findprimerbycoordform
+    
+    args={}
+    args.update(csrf(request))
+    args['form'] = form
+    return render_to_response('frontend/findprimerdesignbycoord.html',args, context_instance=RequestContext(request))
 
 @login_required(login_url='/sorry_login_required/')
-def find_primer_by_gene_name(request):
-    pass
+def findprimerbyprimername(request):
+    if request.POST:
+        form = findprimerbyprimernameform(request.POST)
+        if form.is_valid():
+            #form.save()
+            return HttpResponseRedirect('/primer_design/'+str(form.cleaned_data['primername']))
+    else:
+        findprimer = findprimerbyprimernameform
+    
+    args={}
+    args.update(csrf(request))
+    args['findprimer'] = findprimer
+    return render_to_response('frontend/findprimerdesignbyprimername.html',args, context_instance=RequestContext(request))
 
 @login_required(login_url='/sorry_login_required/')
 def find_primer_design(request):

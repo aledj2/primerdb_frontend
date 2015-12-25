@@ -1,0 +1,24 @@
+<!--extends base -->
+{% extends "base.html" %}
+
+<!-- Import static -->
+{% load staticfiles %}
+{% block content %}
+<div class= "container">
+<div class= "jumbotron">
+
+
+{% for i in allprimers %}
+
+{% if i.primerkey in matchingprimers %}
+<div class = "row">
+<div class="col-md-3"><a href="/primer_design/{{i.primerkey}}">{{i.primername}}</a></div>
+<div class="col-md-3">{{i.chromosome_table.chr}}:{{i.start_stop.start}}-{{i.start_stop.stop}}</div>
+</div>
+
+{% endif %}
+{% endfor %}
+
+</div>
+</div>
+{% endblock %}
