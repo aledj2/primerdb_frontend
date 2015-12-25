@@ -143,8 +143,9 @@ def bad_user(request):
 #     return render (request, "frontend/chromosome_page.html", {'chromosome':chromosome})
 
 
-#@login_required(login_url='/sorry_login_required/')
 
+
+@login_required(login_url='/sorry_login_required/')
 def find_primer_by_gene_select_exons(request, geneshgncid):
     args={}
     geneid=int(geneshgncid)
@@ -172,6 +173,7 @@ def find_primer_by_gene_select_exons(request, geneshgncid):
     return render_to_response('frontend/findprimerbyexon.html',args, context_instance=RequestContext(request))
 
 
+@login_required(login_url='/sorry_login_required/')
 def find_primer_by_gene_select_gene(request):
     if request.POST:
         submittedform = findprimerbygene_selectgene(request.POST)
@@ -186,6 +188,8 @@ def find_primer_by_gene_select_gene(request):
     args['form'] = form
     return render_to_response('frontend/findprimerbygene.html',args, context_instance=RequestContext(request))
 
+
+@login_required(login_url='/sorry_login_required/')
 def display_primers_matching_geneexon(request,geneshgncid,exon):
     geneid_input=geneshgncid
     exon_input=exon
@@ -195,7 +199,11 @@ def display_primers_matching_geneexon(request,geneshgncid,exon):
     args['primerinformation']=primerinformation
     args.update(csrf(request))
     return render_to_response('frontend/geneexonprimerresults.html',args, context_instance=RequestContext(request))
-#def find_primer_by_gene_name(request):
+
+
+@login_required(login_url='/sorry_login_required/')
+def find_primer_by_gene_name(request):
+    pass
 
 @login_required(login_url='/sorry_login_required/')
 def find_primer_design(request):

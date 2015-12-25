@@ -59,7 +59,7 @@ class findprimerbygene_selectexon(forms.Form):
 		geneid=kwargs.pop('geneid',None)
 		super(findprimerbygene_selectexon, self).__init__(*args, **kwargs)
 		
-	exon = forms.ChoiceField(label = "select exon", choices=Primerinformation.objects.values_list('exon','exon'))
+	exon = forms.ChoiceField(label = "select exon", choices=Primerinformation.objects.values_list('exon','exon').distinct())
 	
 
 class ItemForm(forms.Form):
