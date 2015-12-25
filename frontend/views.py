@@ -65,7 +65,10 @@ class add_primer_design_wizard(SessionWizardView):
         tag_text=item_tag.item
         
         gene_entry=Geneshgnc140714.objects.filter(geneshgncid=gene).get()
+        gene_entry.used=1
+        gene_entry.save()
         genename=gene_entry.approvedsymbol
+
 
 
         primername=genename+"_ex"+str(exon)+"_"+tag_text+"_"+version_text
