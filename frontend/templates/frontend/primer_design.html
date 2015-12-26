@@ -50,9 +50,9 @@
   <div class="col-md-2">Location</div>
   <div class="col-md-1">Strand</div>
   <div class="col-md-2">Genome build</div>
-  <div class="col-md-2">Sequence</div>
-  <div class="col-md-1">Sequence</div>
-  <div class="col-md-3">Amplicons using this primer</div>
+  <div class="col-md-3">Sequence</div>
+  <div class="col-md-1">Tag</div>
+  <div class="col-md-2">Amplicons using primer</div>
   <!-- <div class="col-md-3">Start</div>
   <div class="col-md-3">Stop</div> -->
 </strong>
@@ -62,17 +62,18 @@
   <div class="col-md-2">{{primer.chromosome_table.chr}}:{{primer.start_stop.start}}-{{primer.start_stop.stop}}</div>
   <div class="col-md-1">{{Blat.strandtxt.item}}</div>
   <div class="col-md-2">{{Blat.genomebuild_txt.item}}</div>
-  <div class="col-md-2">{{primer.sequence}}</div>
-  <div class="col-md-2">{{primer.modification_text.item}}</div>
-  <div class="col-md-3">
+  <div class="col-md-3">{{primer.sequence}}</div>
+  <div class="col-md-1">{{primer.modification_text.item}}</div>
+  <div class="col-md-2">
 
     <div class ="row">
         {% for pcr in pcrproducts %}
         {% if primer.primerkey == pcr.fprimerid or primer.primerkey == pcr.rprimerid %}
-            <div class="col-md-12">{{pcr.productname}}</div>
+            <div class="col-md-12"><a href="/amplicon_design/{{pcr.productkey}}]">{{pcr.productname}}</a></div>
         {% else %}
             <div class="col-md-12"></div>
     
+    {% endif %}
     </div>
 </div>
 
@@ -190,7 +191,6 @@
 
 {% endif %}
 {% endfor %}
-{% endif %}
 {% endfor %}
 {% endif %}
 {% endif %}
