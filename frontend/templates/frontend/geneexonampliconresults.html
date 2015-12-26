@@ -1,0 +1,23 @@
+<!--extends base -->
+{% extends "base.html" %}
+
+<!-- Import static -->
+{% load staticfiles %}
+{% block content %}
+<div class= "container">
+<div class= "jumbotron">
+
+{% for i in primerinformation %}
+{% for j in amplicons %}
+{% if i.primerkey = j.fprimerid or i.primerkey = f.rprimerid %}
+<table>
+<tr>
+<a href="/amplicon_design/{{j.productkey}}">{{j.productname}}</a>
+</tr>
+{% endif %}
+{% endfor %}
+{% endfor %}
+</table>
+</div>
+</div>
+{% endblock %}

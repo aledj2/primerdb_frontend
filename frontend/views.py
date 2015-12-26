@@ -110,9 +110,9 @@ class add_primer_design_wizard(SessionWizardView):
 
 
 @login_required(login_url='/sorry_login_required/')
-def amplicon_design(request):
+def amplicon_design(request, productkey):
     args={}
-    productid = 1
+    productid = int(productkey)
     args['productid']=productid
     pcrproducts_table=Pcrproducts.objects.all()
     args['pcrproducts']=pcrproducts_table
@@ -137,16 +137,88 @@ def auth_view(request):
 def bad_user(request):
     return render_to_response('frontend/bad_user.html',context_instance=RequestContext(request))
 
-# def chromosome_home(request):
-#     return render_to_response("frontend/chromosome_home.html", {'chromosome_list': Chromosome.objects.all()})
+# find amplicons
+@login_required(login_url='/sorry_login_required/')
+def find_amplicon_design(request):
+    args={}
+    args.update(csrf(request))
+    return render_to_response('frontend/findamplicondesign.html',args, context_instance=RequestContext(request))
 
-# def chromosome_page(request, pk):
-#     chromosome = get_object_or_404(Chromosome, pk=pk)
-#     return render (request, "frontend/chromosome_page.html", {'chromosome':chromosome})
+@login_required(login_url='/sorry_login_required/')
+def find_amplicon_by_gene_select_exons(request, geneshgncid):
+    args={}
+    geneid=int(geneshgncid)
+    args['geneshgncid']=int(geneshgncid)
+
+    if request.POST:
+        submittedform = findampliconbygene_selectexon(request.POST)
+        #submittedform.save()
+        exon=request.POST.get("exon","")
+        return HttpResponseRedirect("/findampliconbygene/"+str(geneid)+"/"+str(exon))
+    else:
+        form = findampliconbygene_selectexon(geneid)
+
+    if Primerinformation.objects.filter(geneshgncid=geneid).exists():
+        gene=Geneshgnc140714.objects.filter(geneshgncid=geneid).values_list('approvedsymbol',flat=True)
+        list=[]
+        list.extend(gene)
+        for i in list:
+            genename=i
+
+    args['gene']=genename
+    args.update(csrf(request))
+    args['form'] = form
+    #return HttpResponse(geneid)
+    return render_to_response('frontend/findprimerbygene_exon.html',args, context_instance=RequestContext(request))
+
+@login_required(login_url='/sorry_login_required/')
+def display_amplicon_matching_geneexon(request,geneshgncid,exon):
+    geneid_input=geneshgncid
+    exon_input=exon
+    
+    args={}
+    amplicons=Pcrproducts.objects.all()
+    args['amplicons']=amplicons
+    primerinformation = Primerinformation.objects.filter(exon=exon_input).filter(geneshgncid=geneid_input).all()
+    args['primerinformation']=primerinformation
+    args.update(csrf(request))
+    return render_to_response('frontend/geneexonampliconresults.html',args, context_instance=RequestContext(request))
 
 
 
 
+@login_required(login_url='/sorry_login_required/')
+def find_amplicon_by_gene_select_gene(request):
+    if request.POST:
+        submittedform = findprimerbygene_selectgene(request.POST)
+        if submittedform.is_valid():
+            gene=submittedform.cleaned_data['gene']
+            return HttpResponseRedirect("/findampliconbygene/"+str(gene))
+    else:
+        form = findprimerbygene_selectgene
+    
+    args={}
+    args.update(csrf(request))
+    args['form'] = form
+    return render_to_response('frontend/findampliconbygene.html',args, context_instance=RequestContext(request))
+
+
+@login_required(login_url='/sorry_login_required/')
+def display_primers_matching_geneexon(request,geneshgncid,exon):
+    geneid_input=geneshgncid
+    exon_input=exon
+    
+    args={}
+    primerinformation = Primerinformation.objects.filter(exon=exon_input).filter(geneshgncid=geneid_input).all()
+    args['primerinformation']=primerinformation
+    args.update(csrf(request))
+    return render_to_response('frontend/geneexonprimerresults.html',args, context_instance=RequestContext(request))
+
+
+
+
+
+#find primers
 @login_required(login_url='/sorry_login_required/')
 def find_primer_by_gene_select_exons(request, geneshgncid):
     args={}
@@ -172,7 +244,7 @@ def find_primer_by_gene_select_exons(request, geneshgncid):
     args.update(csrf(request))
     args['form'] = form
     #return HttpResponse(geneid)
-    return render_to_response('frontend/findprimerbyexon.html',args, context_instance=RequestContext(request))
+    return render_to_response('frontend/findprimerbygene_exon.html',args, context_instance=RequestContext(request))
 
 
 @login_required(login_url='/sorry_login_required/')
@@ -248,17 +320,8 @@ def findprimerbyprimername(request):
 
 @login_required(login_url='/sorry_login_required/')
 def find_primer_design(request):
-    if request.POST:
-        form = findprimerform(request.POST)
-        if form.is_valid():
-            form.save()
-            return HttpResponseRedirect('/primerinformation/')
-    else:
-        findprimer = findprimerform
-    
     args={}
     args.update(csrf(request))
-    args['findprimerform'] = findprimer
     return render_to_response('frontend/findprimerdesign.html',args, context_instance=RequestContext(request))
 
 def home(request):
