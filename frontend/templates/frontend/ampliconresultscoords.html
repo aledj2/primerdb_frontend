@@ -1,0 +1,43 @@
+<!--extends base -->
+{% extends "base.html" %}
+
+<!-- Import static -->
+{% load staticfiles %}
+{% block content %}
+<div class= "container">
+<div class= "jumbotron">
+<div class = "row">
+<div class="col-md-12">
+<h3>All amplicons within 500 bp up/downstream of {{searchpos}}</h3>
+</div>
+</div>
+</div>
+</div>
+<div class= "container">
+<div class= "jumbotron">
+{% for i in amplicons %}
+{% if i.fprimerid in matchingprimers or i.rprimerid in matchingprimers %}
+{% for j in allprimers %}
+{% if j.primerkey == i.fprimerid %}
+<div class = "row">
+<div class="col-md-6"><a href="/amplicon_design/{{i.productkey}}">{{i.productname}}</a></div>
+<div class="col-md-3">{{j.chromosome_table.chr}}:
+{% for j in allprimers %}
+{% if j.primerkey == i.fprimerid %}
+{{j.start_stop.start}}
+{% endif %}{% endfor %}-
+{% for j in allprimers %}
+{% if j.primerkey == i.fprimerid %}
+{{j.start_stop.stop}}
+{% endif %}{% endfor %}</div>
+</div>
+
+{% endif %}
+{% endfor %}
+{% endif %}
+{% endfor %}
+<!-- <h3> no primers in this region</h3> -->
+
+</div>
+</div>
+{% endblock %}

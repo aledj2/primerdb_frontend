@@ -57,7 +57,9 @@ class findampliconbygene_selectexon(forms.Form):
 		
 	exon = forms.ChoiceField(label = "select exon", choices=Primerinformation.objects.values_list('exon','exon').distinct())
 	
-
+class findampliconbycoordform(forms.Form):
+	chromosome = forms.ChoiceField(choices=Chromosome.objects.filter(sorting__gte=100).filter(sorting__lte=125).values_list('chrid','chr'))
+	position = forms.IntegerField()	
 
 
 class findprimerform(forms.ModelForm):

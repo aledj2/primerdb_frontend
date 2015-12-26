@@ -7,10 +7,11 @@
 <div class= "container">
 <div class= "jumbotron">
 
+<h3>All primers within 500 bp up/downstream of {{searchpos}}</h3>
 
 {% for i in allprimers %}
-
 {% if i.primerkey in matchingprimers %}
+
 <div class = "row">
 <div class="col-md-3"><a href="/primer_design/{{i.primerkey}}">{{i.primername}}</a></div>
 <div class="col-md-3">{{i.chromosome_table.chr}}:{{i.start_stop.start}}-{{i.start_stop.stop}}</div>
@@ -18,6 +19,8 @@
 
 {% endif %}
 {% endfor %}
+
+<!-- <h3> no primers in this region</h3> -->
 
 </div>
 </div>

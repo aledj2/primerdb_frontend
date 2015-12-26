@@ -17,6 +17,8 @@ import operator
 from formtools.wizard.views import SessionWizardView
 
 
+
+########################### add new primer design #############################################
 addprimerdesignforms=[("page1", add_new_primer1),("page2", add_new_primer2),("page3", add_new_primer3),("page4", add_new_primer4)]#,("page5", add_new_primer_summary)]
 addprimerdesigntemplates = {"0":"frontend/addprimerdesignwizard.html", "1":"frontend/addprimerdesignwizard.html","2":"frontend/addprimerdesignwizard.html", "3":"frontend/addprimerdesignwizard.html"}#}, "4":"frontend/new_primer_design_summary.html"}
 
@@ -109,19 +111,9 @@ class add_primer_design_wizard(SessionWizardView):
         #return primer_design(primerkey)
 
 
-@login_required(login_url='/sorry_login_required/')
-def amplicon_design(request, productkey):
-    args={}
-    productid = int(productkey)
-    args['productid']=productid
-    pcrproducts_table=Pcrproducts.objects.all()
-    args['pcrproducts']=pcrproducts_table
-    primerinformation = Primerinformation.objects.all()
-    args['primerinformation']=primerinformation
-    storage = Storage.objects.all()
-    args['storage'] = storage
-    return render_to_response("frontend/amplicon_design.html", args,context_instance=RequestContext(request))
 
+
+######################################## log in/out #####################################
 
 def auth_view(request):
     username = request.POST.get('username','')
@@ -137,7 +129,46 @@ def auth_view(request):
 def bad_user(request):
     return render_to_response('frontend/bad_user.html',context_instance=RequestContext(request))
 
-# find amplicons
+
+def login(request):
+    args = {}
+    args.update(csrf(request))
+    return render_to_response('frontend/login.html', args, context_instance=RequestContext(request))
+
+def sorry_login_required(request):
+    return render_to_response ('frontend/sorry_login_required.html',context_instance=RequestContext(request))
+
+def logout(request):
+    auth.logout(request)
+    return render_to_response('frontend/logout.html',context_instance=RequestContext(request))
+
+
+def register_success(request):
+    return render_to_response('frontend/register_success.html')
+
+def register_user(request):
+    if request.method =='POST':
+        form = MyRegistrationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect('/register_success/')
+
+    args={}
+    args.update(csrf(request))
+    args['form'] = MyRegistrationForm()
+    print args
+    return render_to_response('frontend/register.html', args,context_instance=RequestContext(request))
+
+
+
+
+
+
+
+
+
+
+################################### find amplicons ##################################
 @login_required(login_url='/sorry_login_required/')
 def find_amplicon_design(request):
     args={}
@@ -184,9 +215,6 @@ def display_amplicon_matching_geneexon(request,geneshgncid,exon):
     args.update(csrf(request))
     return render_to_response('frontend/geneexonampliconresults.html',args, context_instance=RequestContext(request))
 
-
-
-
 @login_required(login_url='/sorry_login_required/')
 def find_amplicon_by_gene_select_gene(request):
     if request.POST:
@@ -202,7 +230,65 @@ def find_amplicon_by_gene_select_gene(request):
     args['form'] = form
     return render_to_response('frontend/findampliconbygene.html',args, context_instance=RequestContext(request))
 
+@login_required(login_url='/sorry_login_required/')
+def findampliconbycoord(request):
+    if request.POST:
+        form = findampliconbycoordform(request.POST)
+        if form.is_valid():
+            chr = form.cleaned_data['chromosome']
+            pos = int(form.cleaned_data['position'])
+            start = pos - 500
+            stop = pos + 500
+            blat_results = Blat.objects.filter(start__gte=start).filter(stop__lte=stop).all()
+            list_of_primers_in_range=[]
+            for i in blat_results:
+                list_of_primers_in_range.append(i.primerkey)
+            args2={}
+            args2['searchpos']=str(chr)+":"+str(pos)
+            allprimers = Primerinformation.objects.filter(chromosome=chr).all()
+            args2['allprimers']=allprimers
+            amplicons = Pcrproducts.objects.all()
+            args2['amplicons']=amplicons
+            matchingprimers=list_of_primers_in_range
+            args2['matchingprimers']=matchingprimers
+            args2.update(csrf(request))
+            return render_to_response('frontend/ampliconresultscoords.html',args2, context_instance=RequestContext(request))
 
+    else:
+        form = findampliconbycoordform
+    
+    args={}
+    args.update(csrf(request))
+    args['form'] = form
+    return render_to_response('frontend/findamplicondesignbycoord.html',args, context_instance=RequestContext(request))
+
+
+
+@login_required(login_url='/sorry_login_required/')
+def amplicon_design(request, productkey):
+    args={}
+    productid = int(productkey)
+    args['productid']=productid
+    pcrproducts_table=Pcrproducts.objects.all()
+    args['pcrproducts']=pcrproducts_table
+    primerinformation = Primerinformation.objects.all()
+    args['primerinformation']=primerinformation
+    storage = Storage.objects.all()
+    args['storage'] = storage
+    return render_to_response("frontend/amplicon_design.html", args,context_instance=RequestContext(request))
+
+
+
+
+
+
+
+
+
+
+
+
+############################ find primer design ###############################
 @login_required(login_url='/sorry_login_required/')
 def display_primers_matching_geneexon(request,geneshgncid,exon):
     geneid_input=geneshgncid
@@ -215,10 +301,6 @@ def display_primers_matching_geneexon(request,geneshgncid,exon):
     return render_to_response('frontend/geneexonprimerresults.html',args, context_instance=RequestContext(request))
 
 
-
-
-
-#find primers
 @login_required(login_url='/sorry_login_required/')
 def find_primer_by_gene_select_exons(request, geneshgncid):
     args={}
@@ -288,6 +370,7 @@ def findprimerbycoord(request):
             for i in blat_results:
                 list_of_primers_in_range.append(i.primerkey)
             args2={}
+            args2['searchpos']=str(chr)+":"+str(pos)
             allprimers = Primerinformation.objects.filter(chromosome=chr).all()
             args2['allprimers']=allprimers
             matchingprimers=list_of_primers_in_range
@@ -319,27 +402,64 @@ def findprimerbyprimername(request):
     return render_to_response('frontend/findprimerdesignbyprimername.html',args, context_instance=RequestContext(request))
 
 @login_required(login_url='/sorry_login_required/')
-def find_primer_design(request):
+def primer_design(request, primerkey):
     args={}
-    args.update(csrf(request))
-    return render_to_response('frontend/findprimerdesign.html',args, context_instance=RequestContext(request))
+    args['primerkey']=int(primerkey)
+    primerinformation = Primerinformation.objects.all()
+    args['primerinformation']=primerinformation
+    blattable=Blat.objects.all()
+    args['blat']=blattable
+    item_strand=Item.objects.all()
+    args['item_strand']=item_strand
+    snpcheck_table=Snpcheck.objects.all()
+    args['snpcheck']=snpcheck_table
+    storage_table = Storage.objects.all()
+    args['storage']=storage_table
+    audit_table=Audit.objects.all()
+    args['audit']=audit_table
+    pcrproducts_table=Pcrproducts.objects.all()
+    args['pcrproducts']=pcrproducts_table
+    return render_to_response("frontend/primer_design.html", args,context_instance=RequestContext(request))
 
+
+
+
+
+
+
+################### splash pages ############################
 def home(request):
     return render_to_response('frontend/home.html')
     
+@login_required(login_url='/sorry_login_required/')
+def welcome(request):
+    args={}
+    return render_to_response('frontend/welcome.html',context_instance=RequestContext(request))
 
-def login(request):
-    args = {}
-    args.update(csrf(request))
-    return render_to_response('frontend/login.html', args, context_instance=RequestContext(request))
 
-def sorry_login_required(request):
-    return render_to_response ('frontend/sorry_login_required.html',context_instance=RequestContext(request))
 
-def logout(request):
-    auth.logout(request)
-    return render_to_response('frontend/logout.html',context_instance=RequestContext(request))
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+########################### not required#############################
 
 def name(request):
     # if this is a POST request we need to process the form data
@@ -359,25 +479,6 @@ def name(request):
 
     return render(request, "frontend/name.html", {'form': form})
 
-@login_required(login_url='/sorry_login_required/')
-def primer_design(request, primerkey):
-    args={}
-    args['primerkey']=int(primerkey)
-    primerinformation = Primerinformation.objects.all()
-    args['primerinformation']=primerinformation
-    blattable=Blat.objects.all()
-    args['blat']=blattable
-    item_strand=Item.objects.all()
-    args['item_strand']=item_strand
-    snpcheck_table=Snpcheck.objects.all()
-    args['snpcheck']=snpcheck_table
-    storage_table = Storage.objects.all()
-    args['storage']=storage_table
-    audit_table=Audit.objects.all()
-    args['audit']=audit_table
-    pcrproducts_table=Pcrproducts.objects.all()
-    args['pcrproducts']=pcrproducts_table
-    return render_to_response("frontend/primer_design.html", args,context_instance=RequestContext(request))
     
     return HttpResponseRedirect(reverse(contact_details, args=(new_contact.pk,)))
 
@@ -395,30 +496,19 @@ def test_output(request):
     # args('list_of_keys')=request.list_of_keys
     return render_to_response('frontend/test_output.html',args,context_instance=RequestContext(request))
 
-def register_success(request):
-    return render_to_response('frontend/register_success.html')
-
-def register_user(request):
-    if request.method =='POST':
-        form = MyRegistrationForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return HttpResponseRedirect('/register_success/')
-
-    args={}
-    args.update(csrf(request))
-    args['form'] = MyRegistrationForm()
-    print args
-    return render_to_response('frontend/register.html', args,context_instance=RequestContext(request))
 
 
-# def view1(request):
-#     return render_to_response("frontend/view1.html", {'chromosome_list': Chromosome.objects.all()})
 
 @login_required(login_url='/sorry_login_required/')
-def welcome(request):
+def find_primer_design(request):
     args={}
-    return render_to_response('frontend/welcome.html',context_instance=RequestContext(request))
+    args.update(csrf(request))
+    return render_to_response('frontend/findprimerdesign.html',args, context_instance=RequestContext(request))
+
+
+
+
+
 
 
 
