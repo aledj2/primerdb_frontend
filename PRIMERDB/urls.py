@@ -28,6 +28,7 @@ urlpatterns = [
     url(r'^$','frontend.views.login', name='home'),
     url(r'^add_primer_design/$','frontend.views.add_primer_design',name='add_primer_design'),
     url(r'^add_primer_design_wizard/$', add_primer_design_wizard.as_view([add_new_primer1, add_new_primer2, add_new_primer3, add_new_primer4])),#, add_new_primer_summary])),
+    #url(r'^add_amplicon_wizard/$', add_amplicon_wizard.as_view([add_new_amplicon1, add_new_amplicon2, add_new_amplicon3])),#, add_new_primer4])),#, add_new_primer_summary])),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^auth/$','frontend.views.auth_view', name='auth_view'),
     url(r'^bad_user/$','frontend.views.bad_user', name='bad_user'),
@@ -37,7 +38,7 @@ urlpatterns = [
     url(r'^findampliconbygene/$','frontend.views.find_amplicon_by_gene_select_gene', name='find_amplicon_by_gene_select_gene'),
     url(r'^findampliconbygene/(?P<geneshgncid>[0-9]+)/$','frontend.views.find_amplicon_by_gene_select_exons', name='find_amplicon_by_gene_select_exons'),
     url(r'^findampliconbygene/(?P<geneshgncid>[0-9]+)/(?P<exon>[0-9]+)/$','frontend.views.display_amplicon_matching_geneexon', name='display_amplicon_matching_geneexon'),
-    url(r'^findampliconbyprimername/$','frontend.views.findampliconbyprimername', name='findampliconbyprimername'), 
+    url(r'^findampliconbyampliconname/$','frontend.views.findampliconbyampliconname', name='findampliconbyampliconname'), 
     url(r'^amplicon_design/(?P<productkey>[0-9]+)/$','frontend.views.amplicon_design', name='amplicon_design'),
     #find primer design
     url(r'^findprimerbycoord/$','frontend.views.findprimerbycoord', name='findprimerbycoord'),
@@ -46,6 +47,10 @@ urlpatterns = [
     url(r'^findprimerbygene/(?P<geneshgncid>[0-9]+)/(?P<exon>[0-9]+)/$','frontend.views.display_primers_matching_geneexon', name='display_primers_matching_geneexon'),
     url(r'^findprimerbyprimername/$','frontend.views.findprimerbyprimername', name='findprimerbyprimername'),
     url(r'^primer_design/(?P<primerkey>[0-9]+)/$','frontend.views.primer_design', name='primer_design'),
+    #add amplicon design
+    url(r'^add_amplicon_design/$','frontend.views.add_amplicon_design_select_gene',name='add_amplicon_design_select_gene'),
+    url(r'^add_amplicon_design/(?P<geneshgncid>[0-9]+)/$','frontend.views.add_amplicon_design_select_exon',name='add_amplicon_design_select_exon'),
+    url(r'^add_amplicon_design/(?P<geneshgncid>[0-9]+)/(?P<exon>[0-9]+)/$','frontend.views.add_amplicon_design_select_primers',name='add_amplicon_design_select_primers'),
     
     url(r'^find_primer_design/$','frontend.views.find_primer_design',name='find_primer_design'),
     url(r'^home/$', 'frontend.views.login', name='home'),

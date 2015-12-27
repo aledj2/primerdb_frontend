@@ -1,0 +1,30 @@
+<!--extends base -->
+{% extends "base.html" %}
+
+<!-- Import static -->
+{% load staticfiles %}
+{% block content %}
+<div class= "container">
+<div class= "jumbotron">
+
+<form method = POST>
+{% csrf_token %}
+<br>
+<div class="row">
+<strong>
+  <div class="col-md-6">
+  Gene: </strong> {% for i in primers %} {{i.gene_symbol.approvedsymbol}} {% endfor %}
+
+  </div>
+  <div class="col-md-6"></div>
+</div>
+<div class = "row">
+	<div class="col-md-6">{{form2}}</div>
+</strong>
+  <div class="col-md-6"><input type="submit" value="Submit"></div>
+</div>
+</form>
+
+</div>
+</div>
+{% endblock %}

@@ -187,7 +187,8 @@ def find_amplicon_by_gene_select_exons(request, geneshgncid):
         exon=request.POST.get("exon","")
         return HttpResponseRedirect("/findampliconbygene/"+str(geneid)+"/"+str(exon))
     else:
-        form = findampliconbygene_selectexon(geneid)
+        form = findampliconbygene_selectexon(geneshgncid=geneid)
+        #form.fields['exon'].queryset = Primerinformation.objects.filter(geneshgncid=geneid)
 
     if Primerinformation.objects.filter(geneshgncid=geneid).exists():
         gene=Geneshgnc140714.objects.filter(geneshgncid=geneid).values_list('approvedsymbol',flat=True)
@@ -278,6 +279,121 @@ def amplicon_design(request, productkey):
     return render_to_response("frontend/amplicon_design.html", args,context_instance=RequestContext(request))
 
 
+@login_required(login_url='/sorry_login_required/')
+def findampliconbyampliconname(request):
+    if request.POST:
+        form = findampliconbyampliconnameform(request.POST)
+        if form.is_valid():
+            #form.save()
+            return HttpResponseRedirect('/amplicon_design/'+str(form.cleaned_data['amplicon']))
+    else:
+        form = findampliconbyampliconnameform
+    
+    args={}
+    args.update(csrf(request))
+    args['form'] = form
+    amplicons=Pcrproducts.objects.all()
+    args['amplicons']=amplicons
+    return render_to_response('frontend/findamplicondesignbyampliconname.html',args, context_instance=RequestContext(request))
+
+
+
+
+
+
+
+
+
+
+################################ add new amplicon ##################################
+@login_required(login_url='/sorry_login_required/')
+def add_amplicon_design_select_gene(request):
+    if request.POST:
+        form = findampliconbygene_selectgene(request.POST)
+        if form.is_valid():
+            gene = form.cleaned_data['gene']
+            return HttpResponseRedirect('/add_amplicon_design/'+str(gene))
+            #return render_to_response('frontend/addnewamplicondesign_selectexon.html',args2, context_instance=RequestContext(request))
+    else:
+        form = findampliconbygene_selectgene
+    
+    args={}
+    args.update(csrf(request))
+    genes = Geneshgnc140714.objects.filter(used__gte = 0).all()
+    args['genes'] = genes
+    args['form'] = form
+    return render_to_response('frontend/findamplicondesignbyampliconname.html',args, context_instance=RequestContext(request))
+
+
+def add_amplicon_design_select_exon(request, geneshgncid):
+    geneid=int(geneshgncid)
+    
+    if request.POST:
+        form = addamplicon_selectexon(request.POST)
+        if form.is_valid():
+            exon = form.cleaned_data['exon']
+            return HttpResponseRedirect('/add_amplicon_design/'+str(gene)+'/'+str(exon))
+            #return render_to_response('frontend/addnewamplicondesign_selectexon.html',args2, context_instance=RequestContext(request))
+    else:
+        form=addamplicon_selectexon(geneshgncid=geneid)
+
+    if Primerinformation.objects.filter(geneshgncid=geneid).exists():
+        gene=Geneshgnc140714.objects.filter(geneshgncid=geneid).values_list('approvedsymbol',flat=True)
+        list=[]
+        list.extend(gene)
+        for i in list:
+            genename=i
+    
+    primers = Primerinformation.objects.filter(geneshgncid=geneid).all()
+        
+    args={}
+    args['form'] = form
+    args['primers'] = primers
+    args['genename'] = genename
+    args.update(csrf(request))
+    #return HttpResponse(args.values())
+    return render_to_response('frontend/addnewamplicondesign_selectexon.html',args, context_instance=RequestContext(request))
+
+
+
+def add_amplicon_design_select_primers(request,geneshgncid,exon):
+    geneshgncid=str(geneshgncid)
+    exon=str(exon)
+    
+    if request.POST:
+        form = addamplicon_selectexon(request.POST)
+        if form.is_valid():
+            exon = form.cleaned_data['exon']
+            return HttpResponseRedirect('/add_amplicon_design/'+str(gene)+'/'+str(exon))
+            #return render_to_response('frontend/addnewamplicondesign_selectexon.html',args2, context_instance=RequestContext(request))
+    else:
+        form = addamplicon_selectexon
+
+
+    forwardprimers=Geneshgnc140714.objects.filter(geneshgncid=geneshgncid).filter(exon=exon).all()
+    reverseprimers=Geneshgnc140714.objects.filter(geneshgncid=geneshgncid).filter(exon=exon).all()
+
+    args={}
+    args['form'] = form
+    args['forwardprimers']=forwardprimers
+    args['reverseprimers']=reverseprimers
+    args.update(csrf(request))
+    return render_to_response('frontend/addnewamplicondesign_selectprimers.html',args, context_instance=RequestContext(request))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -313,7 +429,7 @@ def find_primer_by_gene_select_exons(request, geneshgncid):
         exon=request.POST.get("exon","")
         return HttpResponseRedirect("/findprimerbygene/"+str(geneid)+"/"+str(exon))
     else:
-        form = findprimerbygene_selectexon(geneid)
+        form = findprimerbygene_selectexon(geneshgncid=geneid)
 
     if Primerinformation.objects.filter(geneshgncid=geneid).exists():
         gene=Geneshgnc140714.objects.filter(geneshgncid=geneid).values_list('approvedsymbol',flat=True)

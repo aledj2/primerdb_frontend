@@ -41,6 +41,28 @@ class add_new_primer4(forms.Form):
 class add_new_primer_summary(forms.Form):
 	pass
 
+
+
+
+
+
+
+
+################### add new amplicon ######################
+class add_new_amplicon1(forms.Form):
+	gene = forms.TypedChoiceField(choices=Geneshgnc140714.objects.values_list('geneshgncid','approvedsymbol').filter(used__gte=0).order_by('-used','approvedsymbol'))
+
+class addamplicon_selectexon(forms.Form):
+	def __init__(self, *args, **kwargs):
+		self.geneid=kwargs.pop('geneshgncid',None)
+		super(addamplicon_selectexon, self).__init__(*args, **kwargs)
+		self.fields['exon'].choices=Primerinformation.objects.filter(geneshgncid=self.geneid).values_list('exon','exon').distinct().order_by('exon')
+		
+	exon = forms.ChoiceField(label = "select exon")	
+
+
+
+####################################################################
 class approvedsymbollist(forms.Form):
 	 gene_symbol_list = forms.TypedChoiceField(choices=Geneshgnc140714.objects.values_list('geneshgncid','approvedsymbol').order_by('-used','approvedsymbol'))
 	 exon = forms.IntegerField()
@@ -51,16 +73,23 @@ class findampliconbygene_selectgene(forms.Form):
 	gene = forms.TypedChoiceField(label = "select gene",widget=forms.Select(), choices=Geneshgnc140714.objects.values_list('geneshgncid','approvedsymbol').filter(used__gte=1).order_by('approvedsymbol'))
 
 class findampliconbygene_selectexon(forms.Form):
-	def __init__(self, geneid, *args, **kwargs):
-		geneid=kwargs.pop('geneid',None)
+	def __init__(self, *args, **kwargs):
+		self.geneid=kwargs.pop('geneshgncid',None)
 		super(findampliconbygene_selectexon, self).__init__(*args, **kwargs)
+		self.fields['exon'].choices=Primerinformation.objects.filter(geneshgncid=self.geneid).values_list('exon','exon').distinct().order_by('exon')
 		
-	exon = forms.ChoiceField(label = "select exon", choices=Primerinformation.objects.values_list('exon','exon').distinct())
+	exon = forms.ChoiceField(label = "select exon")
 	
+
 class findampliconbycoordform(forms.Form):
 	chromosome = forms.ChoiceField(choices=Chromosome.objects.filter(sorting__gte=100).filter(sorting__lte=125).values_list('chrid','chr'))
 	position = forms.IntegerField()	
 
+class selectexon(forms.Form):
+	def __init__(self, geneid, *args, **kwargs):
+		geneid=kwargs.pop('geneid',None)
+		super(selectexon, self).__init__(*args, **kwargs)
+	exon = forms.TypedChoiceField(choices=Primerinformation.objects.values_list('exon','exon').distinct())
 
 class findprimerform(forms.ModelForm):
 	class Meta:
@@ -76,14 +105,19 @@ class findprimerbygene_selectgene(forms.Form):
 	gene = forms.TypedChoiceField(label = "select gene",widget=forms.Select(), choices=Geneshgnc140714.objects.values_list('geneshgncid','approvedsymbol').filter(used__gte=1).order_by('approvedsymbol'))
 
 class findprimerbygene_selectexon(forms.Form):
-	def __init__(self, geneid, *args, **kwargs):
-		geneid=kwargs.pop('geneid',None)
+	def __init__(self, *args, **kwargs):
+		self.geneid=kwargs.pop('geneshgncid',None)
 		super(findprimerbygene_selectexon, self).__init__(*args, **kwargs)
+		self.fields['exon'].choices=Primerinformation.objects.filter(geneshgncid=self.geneid).values_list('exon','exon').distinct().order_by('exon')
 		
-	exon = forms.ChoiceField(label = "select exon", choices=Primerinformation.objects.values_list('exon','exon').distinct())
+	exon = forms.ChoiceField(label = "select exon")
+	
 	
 class findprimerbyprimernameform(forms.Form):
 	primername = forms.TypedChoiceField(label="primername",choices=Primerinformation.objects.values_list('primerkey','primername'))
+
+class findampliconbyampliconnameform(forms.Form):
+	amplicon = forms.TypedChoiceField(label="amplicon name",choices=Pcrproducts.objects.values_list('productkey','productname'))
 
 class ItemForm(forms.Form):
 	version = forms.TypedChoiceField(choices=Item.objects.filter(itemcategoryindex1id=55).values_list('item','item'))
