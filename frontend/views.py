@@ -52,14 +52,14 @@ class add_primer_design_wizard(SessionWizardView):
         assay=args['all_data']['assay']
         ucsc=args['all_data']['ucsc']
         
+        new_version=333
         if Primerinformation.objects.filter(geneshgncid=gene).filter(exon=exon).exists():
-            max_current_version=Primerinformation.objects.filter(geneshgncid=gene).filter(exon=exon).values_list('version',flat=True).order_by('-version')[:1]
+            max_current_version=Primerinformation.objects.filter(geneshgncid=gene).filter(exon=exon).filter(modification=mod).values_list('version',flat=True).order_by('-version')[:1]
             list=[]
             list.extend(max_current_version)
             for i in list:
                 new_version=int(i)+1
-        else:
-            new_version=333
+        
 
         
         item_version=Item.objects.filter(itemid=new_version).get()
@@ -371,16 +371,37 @@ def add_amplicon_design_select_primers(request,geneshgncid,exon):
             notes=form.cleaned_data['notes']
             return HttpResponse( fprimerid,rprimerid,notes)
         else:
-            return HttpResponse(request.POST.get("notes",""))
+            
             fprimerid= request.POST.get('fprimer',"")
             rprimerid= request.POST.get('rprimer',"")
             notes= request.POST.get('notes',"")
 
-            newproduct = Pcrproducts(fprimerid=fprimerid, rprimerid=rprimerid,notes=notes)
+            gene=Geneshgnc140714.objects.filter(geneshgncid=geneshgncid).values_list('approvedsymbol',flat=True)
+            list=[]
+            list.extend(gene)
+            for i in list:
+                genename=i
+            product_name = genename+"_Ex"+exon
+            
+            # matching products ascending
+            matching_product_versions = Pcrproducts.objects.filter(productname__startswith=product_name).values_list('version',flat=True).order_by('version')
+                
+            new_version=333
+            for i in matching_product_versions:
+                new_version=int(i)+1
+            
+            #return HttpResponse(new_version)
+            item_version=Item.objects.filter(itemid=new_version).get()
+            version_text=item_version.item
+
+            product_name=product_name+"_"+version_text
+            #return HttpResponse(product_name)
+            newproduct = Pcrproducts(fprimerid=fprimerid, rprimerid=rprimerid,version=new_version,notes=notes, productname=product_name, active=1)
             newproduct.save()
             newproductkey=newproduct.productkey
 
             # get the version number for the amplicon
+
             # make the product name
             # update the table
 
@@ -544,15 +565,15 @@ def findprimerbyprimername(request):
 def primer_design(request, primerkey):
     args={}
     args['primerkey']=int(primerkey)
-    primerinformation = Primerinformation.objects.all()
+    primerinformation = Primerinformation.objects.filter(primerkey=primerkey).all()
     args['primerinformation']=primerinformation
-    blattable=Blat.objects.all()
+    blattable=Blat.objects.filter(primerkey=primerkey).all()
     args['blat']=blattable
     item_strand=Item.objects.all()
     args['item_strand']=item_strand
-    snpcheck_table=Snpcheck.objects.all()
+    snpcheck_table=Snpcheck.objects.filter(primerkey=primerkey).all()
     args['snpcheck']=snpcheck_table
-    storage_table = Storage.objects.all()
+    storage_table = Storage.objects.filter(primerkey=primerkey).all()
     args['storage']=storage_table
     audit_table=Audit.objects.all()
     args['audit']=audit_table

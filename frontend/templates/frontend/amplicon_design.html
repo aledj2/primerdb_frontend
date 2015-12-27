@@ -24,7 +24,7 @@
 <!-- reverse primer -->
 {% for rprimer in primerinformation %}
 {% if rprimer.primerkey == pcr.rprimerid %}
-<h2>Amplicon design</h2>
+<h2>{{pcr.productname}}</h2>
 <h2> Gene: {{fprimer.gene_symbol.approvedsymbol}} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Exon: {{fprimer.exon}} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 {{fprimer.chromosome_table.chr}}:{{fprimer.start_stop.start}}-{{rprimer.start_stop.stop}} </h2>
 </div>
@@ -50,8 +50,7 @@
             <div class="col-md-4">Concentration (ul)</div>
             </strong>
         </div>
-<!-- get the Productkey -->
-{% if productid != none %}
+
 <!-- find the correct amplicon -->
 {% for pcr in pcrproducts %}
 {% if pcr.productkey == productid %}
@@ -65,6 +64,16 @@
         </div>
 {% endif %}
 {% endfor %}
+{% endif %}
+{% endfor %}
+</div>
+</div>
+
+<div class="jumbotron">
+    <div class="container">
+    <p>Stock Primer Information</p>
+{% for pcr in pcrproducts %}
+{% if pcr.productkey = productid %}
 
 <!-- get the F primer -->
 {% for fprimer in primerinformation %}
@@ -72,15 +81,8 @@
 <!-- reverse primer -->
 {% for rprimer in primerinformation %}
 {% if rprimer.primerkey == pcr.rprimerid %}
-<!-- join to get concentration -->
-{% for tube in storage %}
-{% if rprimer.primerkey == tube.primerkey %}
-</div>
-</div>
 
-<div class="jumbotron">
-    <div class="container">
-    <p>Stock Primer Information</p>
+
         <div class="row">
             <strong> 
             <div class="col-md-6">Forward primer</div>
@@ -99,9 +101,11 @@
             <!-- join to get concentration -->
             {% for tube in storage %}
             {% if fprimer.primerkey == tube.primerkey %}
-            {{tube.storage_conc_txt.item}} ul</div>
+            {{tube.storage_conc_txt.item}} ul 
             {% endif %}
             {% endfor %}
+            </div>
+            
             <div class="col-md-2"><strong> Concentration</strong></div>
             <div class="col-md-4"><!-- join to get concentration -->
             {% for tube in storage %}
@@ -130,16 +134,19 @@
             <div class="col-md-4">
             {% for tube in storage %}
             {% if fprimer.primerkey == tube.primerkey %}
-            Tray:{{tube.storage_tray_txt.item}} &nbsp;&nbsp; Grid: {{tube.storage_grid_txt.item}} </div>
+            Tray:{{tube.storage_tray_txt.item}} &nbsp;&nbsp; Grid: {{tube.storage_grid_txt.item}}
             {% endif %}
             {% endfor %}
+            </div>
+            
             <div class="col-md-2"><strong> Stock storage location</strong></div>
             <div class="col-md-4">
             {% for tube in storage %}
             {% if rprimer.primerkey == tube.primerkey %}
-            Tray:{{tube.storage_tray_txt.item}} &nbsp;&nbsp; Grid: {{tube.storage_grid_txt.item}} </div>
+            Tray:{{tube.storage_tray_txt.item}} &nbsp;&nbsp; Grid: {{tube.storage_grid_txt.item}} 
             {% endif %}
             {% endfor %}
+            </div>
         </div>
         </div>
         <br>
@@ -157,40 +164,7 @@
 {% endfor %}
 {% endif %}
 {% endfor %}
-{% endif %}
-{% endfor %}
-{% endif %}
 {% endblock %}
-
-<!--<table>
-<tr>
-<th> Primername </th>
-<th> gene name </th>
-<th> Chr </th>
-<th> Start </th>
-<th> Stop </th>
-<th> assay </th>
-
-</tr>
-<tr> 
-{% for item in query_result %}
-if item.primername == 
-<td>{{item.primername}}</td>
-<td>{{item.gene_symbol_2.approvedsymbol}}</td>
-<td>{{item.chromosome_table.chr}}</td>
-<td>{{item.start_stop.start}}</td>
-<td>{{item.start_stop.stop}}</td>
-<td>{{item.version_text.item}}</td>
-    </tr>
-    {% endfor %}
-</table> -->
-
-<!-- <form action ="." method = "post">
-	{{form}}
-	
-	<input type="submit" name="submit" value="Save">
-</form> -->
-
 
 
 
