@@ -11,18 +11,27 @@
 {% csrf_token %}
 <br>
 <div class="row">
-<strong>
   <div class="col-md-6">
-  Gene: </strong> {% for i in primers %} {{i.gene_symbol.approvedsymbol}} {% endfor %}
-
-  </div>
-  <div class="col-md-6"></div>
+  
+	<strong>Gene: </strong> {% for j in approvedsymbol %} {{j.approvedsymbol}} {% endfor %}
+    </div>
+  <div class="col-md-6"><strong>Exon:</strong> {% for i in exon %} {{i}} {% endfor %}</div>
+</div>
+<div class="row">
+<div class = "col-md-6">Select forward primer</div>
+<div class = "col-md-6">Select reverse primer</div>
 </div>
 <div class = "row">
-	<div class="col-md-6">{{form2}}</div>
-</strong>
-  <div class="col-md-6"><input type="submit" value="Submit"></div>
+	<div class="col-md-6">{{form.fprimer}}</div>
+	<div class="col-md-6">{{form.rprimer}}</div>
+	</div>
+<div class = "row">
+	<div class = "col-md-12">Notes:{{form.notes}}</div>
 </div>
+<div class= "row">
+ <div class="col-md-12"><input type="submit" value="Submit"></div>
+</div>
+</strong>
 </form>
 
 </div>

@@ -322,7 +322,7 @@ def add_amplicon_design_select_gene(request):
     genes = Geneshgnc140714.objects.filter(used__gte = 0).all()
     args['genes'] = genes
     args['form'] = form
-    return render_to_response('frontend/findamplicondesignbyampliconname.html',args, context_instance=RequestContext(request))
+    return render_to_response('frontend/addamplicon_selectgene.html',args, context_instance=RequestContext(request))
 
 
 def add_amplicon_design_select_exon(request, geneshgncid):
@@ -332,7 +332,10 @@ def add_amplicon_design_select_exon(request, geneshgncid):
         form = addamplicon_selectexon(request.POST)
         if form.is_valid():
             exon = form.cleaned_data['exon']
-            return HttpResponseRedirect('/add_amplicon_design/'+str(gene)+'/'+str(exon))
+            return HttpResponseRedirect('/add_amplicon_design/'+str(geneid)+'/'+str(exon))
+        else:
+            exon=request.POST.get("exon","")
+            return HttpResponseRedirect('/add_amplicon_design/'+str(geneid)+'/'+str(exon))
             #return render_to_response('frontend/addnewamplicondesign_selectexon.html',args2, context_instance=RequestContext(request))
     else:
         form=addamplicon_selectexon(geneshgncid=geneid)
@@ -363,21 +366,41 @@ def add_amplicon_design_select_primers(request,geneshgncid,exon):
     if request.POST:
         form = addamplicon_selectexon(request.POST)
         if form.is_valid():
-            exon = form.cleaned_data['exon']
-            return HttpResponseRedirect('/add_amplicon_design/'+str(gene)+'/'+str(exon))
+            fprimerid= form.cleaned_data['fprimer']
+            rprimerid= form.cleaned_data['rprimer']
+            notes=form.cleaned_data['notes']
+            return HttpResponse( fprimerid,rprimerid,notes)
+        else:
+            return HttpResponse(request.POST.get("notes",""))
+            fprimerid= request.POST.get('fprimer',"")
+            rprimerid= request.POST.get('rprimer',"")
+            notes= request.POST.get('notes',"")
+
+            newproduct = Pcrproducts(fprimerid=fprimerid, rprimerid=rprimerid,notes=notes)
+            newproduct.save()
+            newproductkey=newproduct.productkey
+
+            # get the version number for the amplicon
+            # make the product name
+            # update the table
+
+            return HttpResponseRedirect('/amplicon_design/'+str(newproductkey))
             #return render_to_response('frontend/addnewamplicondesign_selectexon.html',args2, context_instance=RequestContext(request))
     else:
-        form = addamplicon_selectexon
+        form = addamplicon_selectprimers(geneshgncid=geneshgncid,exon=exon)
 
 
-    forwardprimers=Geneshgnc140714.objects.filter(geneshgncid=geneshgncid).filter(exon=exon).all()
-    reverseprimers=Geneshgnc140714.objects.filter(geneshgncid=geneshgncid).filter(exon=exon).all()
-
+    forwardprimers=Primerinformation.objects.filter(geneshgncid=geneshgncid).filter(exon=exon).all()
+    reverseprimers=Primerinformation.objects.filter(geneshgncid=geneshgncid).filter(exon=exon).all()
+    approvedsymbol=Geneshgnc140714.objects.filter(geneshgncid=geneshgncid).all()
     args={}
     args['form'] = form
     args['forwardprimers']=forwardprimers
     args['reverseprimers']=reverseprimers
     args.update(csrf(request))
+    args['geneshgncid']=geneshgncid
+    args['approvedsymbol']=approvedsymbol
+    args['exon']=exon
     return render_to_response('frontend/addnewamplicondesign_selectprimers.html',args, context_instance=RequestContext(request))
 
 

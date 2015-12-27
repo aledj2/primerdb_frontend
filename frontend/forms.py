@@ -49,18 +49,28 @@ class add_new_primer_summary(forms.Form):
 
 
 ################### add new amplicon ######################
-class add_new_amplicon1(forms.Form):
-	gene = forms.TypedChoiceField(choices=Geneshgnc140714.objects.values_list('geneshgncid','approvedsymbol').filter(used__gte=0).order_by('-used','approvedsymbol'))
+class findampliconbygene_selectgene(forms.Form):
+	gene = forms.TypedChoiceField(label = "select gene", choices=Geneshgnc140714.objects.values_list('geneshgncid','approvedsymbol').filter(used__gte=0).order_by('-used','approvedsymbol'))
 
 class addamplicon_selectexon(forms.Form):
 	def __init__(self, *args, **kwargs):
 		self.geneid=kwargs.pop('geneshgncid',None)
 		super(addamplicon_selectexon, self).__init__(*args, **kwargs)
 		self.fields['exon'].choices=Primerinformation.objects.filter(geneshgncid=self.geneid).values_list('exon','exon').distinct().order_by('exon')
+	exon = forms.ChoiceField(label = "select exon")		
 		
-	exon = forms.ChoiceField(label = "select exon")	
 
-
+class addamplicon_selectprimers(forms.Form):
+	def __init__(self, *args, **kwargs):
+		self.geneid=kwargs.pop('geneshgncid',None)
+		self.exon=kwargs.pop('exon',None)
+		super(addamplicon_selectprimers, self).__init__(*args, **kwargs)
+		self.fields['fprimer'].choices=Primerinformation.objects.filter(geneshgncid=self.geneid).filter(exon=self.exon).filter(modification=323).values_list('primerkey','primername').order_by('exon')
+		self.fields['rprimer'].choices=Primerinformation.objects.filter(geneshgncid=self.geneid).filter(exon=self.exon).filter(modification=324).values_list('primerkey','primername').order_by('exon')
+		
+	rprimer = forms.ChoiceField(label = "select reverse primer")	
+	fprimer = forms.ChoiceField(label = "select forward primer")
+	notes = forms.CharField(required=False)
 
 ####################################################################
 class approvedsymbollist(forms.Form):
